@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)_external\freeglut\include;$(SolutionDir)_external\glfw\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\glm\glm-stable\glm;$(SolutionDir)_external\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)_external\freeglut\lib;$(SolutionDir)_external\glew-2.1.0\lib\Release\Win32;$(SolutionDir)_external\glfw\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)_external\stb-master;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glew-2.1.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)_external\glew-2.1.0\lib\Release\Win32;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
