@@ -231,6 +231,7 @@ protected:
     float lastX = 0.f, lastY = 0.f;
 };
 
+Camera* pCamera = nullptr;
 
 int main(int argc, char** argv)
 {
@@ -259,6 +260,8 @@ int main(int argc, char** argv)
 
     glewInit();
 
+    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
+
     while (!glfwWindowShouldClose(window))
     {
         double currentFrame = glfwGetTime();
@@ -267,6 +270,7 @@ int main(int argc, char** argv)
         glfwPollEvents();
     }
 
+    delete pCamera;
     glfwTerminate();
     return 0;
 }
