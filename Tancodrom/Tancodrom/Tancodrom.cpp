@@ -1,9 +1,10 @@
-#include <stdlib.h>
+ï»¿#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 #include <GL/glew.h>
 
+#define GLM_FORCE_CTOR_INIT 
 #include <GLM.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
@@ -103,11 +104,12 @@ public:
     const glm::mat4 GetProjectionMatrix() const
     {
         glm::mat4 Proj = glm::mat4(1);
-        if (isPerspective) {
+        if (isPerspective)
+        {
             float aspectRatio = ((float)(width)) / height;
             Proj = glm::perspective(glm::radians(FoVy), aspectRatio, zNear, zFar);
-        }
-        else {
+        } else
+        {
             float scaleFactor = 2000.f;
             Proj = glm::ortho<float>(
                 -width / scaleFactor, width / scaleFactor,
@@ -119,31 +121,33 @@ public:
     void ProcessKeyboard(ECameraMovementType direction, float deltaTime)
     {
         float velocity = (float)(cameraSpeedFactor * deltaTime);
-        switch (direction) {
-        case ECameraMovementType::FORWARD:
-            position += forward * velocity;
-            break;
-        case ECameraMovementType::BACKWARD:
-            position -= forward * velocity;
-            break;
-        case ECameraMovementType::LEFT:
-            position -= right * velocity;
-            break;
-        case ECameraMovementType::RIGHT:
-            position += right * velocity;
-            break;
-        case ECameraMovementType::UP:
-            position += up * velocity;
-            break;
-        case ECameraMovementType::DOWN:
-            position -= up * velocity;
-            break;
+        switch (direction)
+        {
+            case ECameraMovementType::FORWARD:
+                position += forward * velocity;
+                break;
+            case ECameraMovementType::BACKWARD:
+                position -= forward * velocity;
+                break;
+            case ECameraMovementType::LEFT:
+                position -= right * velocity;
+                break;
+            case ECameraMovementType::RIGHT:
+                position += right * velocity;
+                break;
+            case ECameraMovementType::UP:
+                position += up * velocity;
+                break;
+            case ECameraMovementType::DOWN:
+                position -= up * velocity;
+                break;
         }
     }
 
     void MouseControl(float xPos, float yPos)
     {
-        if (bFirstMouseMove) {
+        if (bFirstMouseMove)
+        {
             lastX = xPos;
             lastY = yPos;
             bFirstMouseMove = false;
@@ -154,7 +158,8 @@ public:
         lastX = xPos;
         lastY = yPos;
 
-        if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
+        if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6)
+        {
             return;
         }
         xChange *= mouseSensitivity;
@@ -165,7 +170,8 @@ public:
 
     void ProcessMouseScroll(float yOffset)
     {
-        if (FoVy >= 1.0f && FoVy <= 90.0f) {
+        if (FoVy >= 1.0f && FoVy <= 90.0f)
+        {
             FoVy -= yOffset;
         }
         if (FoVy <= 1.0f)
@@ -183,15 +189,16 @@ private:
         //std::cout << "yaw = " << yaw << std::endl;
         //std::cout << "pitch = " << pitch << std::endl;
 
-        // Avem grijã sã nu ne dãm peste cap
-        if (constrainPitch) {
+        // Avem grijï¿½ sï¿½ nu ne dï¿½m peste cap
+        if (constrainPitch)
+        {
             if (pitch > 89.0f)
                 pitch = 89.0f;
             if (pitch < -89.0f)
                 pitch = -89.0f;
         }
 
-        // Se modificã vectorii camerei pe baza unghiurilor Euler
+        // Se modificï¿½ vectorii camerei pe baza unghiurilor Euler
         UpdateCameraVectors();
     }
 
@@ -379,7 +386,8 @@ unsigned int CreateTexture(const std::string& strTexturePath)
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     unsigned char* data = stbi_load(strTexturePath.c_str(), &width, &height, &nrChannels, 0);
-    if (data) {
+    if (data)
+    {
         GLenum format;
         if (nrChannels == 1)
             format = GL_RED;
@@ -399,8 +407,8 @@ unsigned int CreateTexture(const std::string& strTexturePath)
         // set texture filtering parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    }
-    else {
+    } else
+    {
         std::cout << "Failed to load texture: " << strTexturePath << std::endl;
     }
     stbi_image_free(data);
@@ -508,7 +516,7 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(window))
     {
         double currentFrame = glfwGetTime();
-      
+
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
@@ -568,8 +576,8 @@ int main(int argc, char** argv)
         shadowMappingShader.SetMat4("view", view);
         // set light uniforms
         shadowMappingShader.SetVec3("viewPos", pCamera->GetPosition());
-        //shadowMappingShader.SetVec3("lightPos", lightPos);
-        //shadowMappingShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+        shadowMappingShader.SetVec3("lightPos", lightPos);
+        shadowMappingShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         glActiveTexture(GL_TEXTURE1);
@@ -609,7 +617,8 @@ void renderFloor()
 {
     unsigned int planeVBO;
 
-    if (planeVAO == 0) {
+    if (planeVAO == 0)
+    {
         // set up vertex data (and buffer(s)) and configure vertex attributes
         float planeVertices[] = {
             // positions            // normals         // texcoords
@@ -732,7 +741,8 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
         pCamera->ProcessKeyboard(DOWN, (float)deltaTime);
 
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+    {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         pCamera->Reset(width, height);
