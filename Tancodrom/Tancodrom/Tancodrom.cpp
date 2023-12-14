@@ -411,6 +411,12 @@ void renderScene(const Shader& shader);
 void renderCube();
 void renderFloor();
 
+
+// timing
+double deltaTime = 0.0f;	// time between current frame and last frame
+double lastFrame = 0.0f;
+
+
 int main(int argc, char** argv)
 {
     std::string strFullExeFileName = argv[0];
@@ -480,10 +486,46 @@ int main(int argc, char** argv)
     shadowMappingShader.SetInt("diffuseTexture", 0);
     shadowMappingShader.SetInt("shadowMap", 1);
 
+    // lighting info
+    // -------------
+    glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
+
+    glEnable(GL_CULL_FACE);
+
     while (!glfwWindowShouldClose(window))
     {
         double currentFrame = glfwGetTime();
       
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // input
+        // -----
+        //processInput(window);
+
+        // render
+        // ------
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 1. render depth of scene to texture (from light's perspective)
+        glm::mat4 lightProjection, lightView;
+        glm::mat4 lightSpaceMatrix;
+
+        glm::mat4 lightRotationMatrix = glm::mat4(
+            glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+            glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+            glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+            glm::vec4(sin(lastFrame), 0.0f, cos(lastFrame), 1.0f)
+        );
+
+        glm::vec4 rotatedLightPos = lightRotationMatrix * glm::vec4(lightPos, 1.0f);
+
+        float near_plane = 1.0f, far_plane = 7.5f;
+        lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        lightSpaceMatrix = lightProjection * lightView;
+
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
