@@ -407,6 +407,9 @@ unsigned int CreateTexture(const std::string& strTexturePath)
 
     return textureId;
 }
+void renderScene(const Shader& shader);
+void renderCube();
+void renderFloor();
 
 int main(int argc, char** argv)
 {
