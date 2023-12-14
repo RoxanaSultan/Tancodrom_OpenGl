@@ -371,6 +371,43 @@ private:
 
 Camera* pCamera = nullptr;
 
+unsigned int CreateTexture(const std::string& strTexturePath)
+{
+    unsigned int textureId = -1;
+
+    // load image, create texture and generate mipmaps
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    unsigned char* data = stbi_load(strTexturePath.c_str(), &width, &height, &nrChannels, 0);
+    if (data) {
+        GLenum format;
+        if (nrChannels == 1)
+            format = GL_RED;
+        else if (nrChannels == 3)
+            format = GL_RGB;
+        else if (nrChannels == 4)
+            format = GL_RGBA;
+
+        glGenTextures(1, &textureId);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    else {
+        std::cout << "Failed to load texture: " << strTexturePath << std::endl;
+    }
+    stbi_image_free(data);
+
+    return textureId;
+}
+
 int main(int argc, char** argv)
 {
     std::string strFullExeFileName = argv[0];
@@ -400,10 +437,84 @@ int main(int argc, char** argv)
 
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
 
+    // build and compile shaders
+    // -------------------------
+    Shader shadowMappingShader("ShadowMapping.vs", "ShadowMapping.fs");
+    Shader shadowMappingDepthShader("ShadowMappingDepth.vs", "ShadowMappingDepth.fs");
+
+    // load textures
+    // -------------
+    unsigned int floorTexture = CreateTexture(strExePath + "\\DesertFloor.png");
+
+    // configure depth map FBO
+    // -----------------------
+    const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+    unsigned int depthMapFBO;
+    glGenFramebuffers(1, &depthMapFBO);
+    // create depth texture
+    unsigned int depthMap;
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+    // attach depth texture as FBO's depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+    // shader configuration
+    // --------------------
+    shadowMappingShader.Use();
+    shadowMappingShader.SetInt("diffuseTexture", 0);
+    shadowMappingShader.SetInt("shadowMap", 1);
+
     while (!glfwWindowShouldClose(window))
     {
         double currentFrame = glfwGetTime();
       
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+        renderScene(shadowMappingDepthShader);
+        glCullFace(GL_BACK);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // reset viewport
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 2. render scene as normal using the generated depth/shadow map 
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        shadowMappingShader.Use();
+        glm::mat4 projection = pCamera->GetProjectionMatrix();
+        glm::mat4 view = pCamera->GetViewMatrix();
+        shadowMappingShader.SetMat4("projection", projection);
+        shadowMappingShader.SetMat4("view", view);
+        // set light uniforms
+        shadowMappingShader.SetVec3("viewPos", pCamera->GetPosition());
+        shadowMappingShader.SetVec3("lightPos", lightPos);
+        shadowMappingShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glDisable(GL_CULL_FACE);
+        renderScene(shadowMappingShader);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -411,4 +522,21 @@ int main(int argc, char** argv)
     delete pCamera;
     glfwTerminate();
     return 0;
+}
+
+// renders the 3D scene
+// --------------------
+void renderScene(const Shader& shader)
+{
+    // floor
+    glm::mat4 model;
+    shader.SetMat4("model", model);
+    renderFloor();
+
+    // cube
+    model = glm::mat4();
+    model = glm::translate(model, glm::vec3(0.0f, 1.75f, 0.0));
+    model = glm::scale(model, glm::vec3(0.75f));
+    shader.SetMat4("model", model);
+    renderCube();
 }
