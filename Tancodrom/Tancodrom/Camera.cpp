@@ -132,7 +132,7 @@ void Camera::ProcessMouseScroll(float yOffset)
         FoVy = 90.0f;
 }
 
-void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true)
+void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)
 {
     yaw += xOffset;
     pitch += yOffset;
