@@ -20,6 +20,8 @@
 
 #include "Camera.h"
 #include "Shader.h"
+#include "Mesh.h"
+#include "OBJLoader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
 #pragma comment (lib, "glew32.lib")
@@ -100,6 +102,11 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+
+    std::string objFilePath = "C:\Facultate\ANUL II SEM I\G3D\Tancodrom_OpenGl\Tancodrom\Debug\TankModel.obj";
+    Mesh myMesh = OBJLoader::Load(objFilePath);
+
+
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Tancodrom", NULL, NULL);
     if (window == NULL)
     {
@@ -123,6 +130,7 @@ int main(int argc, char** argv)
     // -------------------------
     Shader shadowMappingShader("ShadowMapping.vs", "ShadowMapping.fs");
     Shader shadowMappingDepthShader("ShadowMappingDepth.vs", "ShadowMappingDepth.fs");
+    Shader TankModelShader("TankModelShader.vs", "TankModelShader.fs");
 
     // load textures
     // -------------
@@ -237,6 +245,19 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
 
+
+        // Render
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Use shader program
+        TankModelShader.Use();
+        glm::mat4 tankModelMatrix = glm::mat4(1.0f); // Replace with appropriate transformations
+        TankModelShader.SetMat4("model", tankModelMatrix);
+        myMesh.Draw(TankModelShader);
+        renderScene(TankModelShader);
+
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -261,6 +282,7 @@ void renderScene(const Shader& shader)
     model = glm::scale(model, glm::vec3(0.75f));
     shader.SetMat4("model", model);
     renderCube();
+
 }
 
 
