@@ -18,6 +18,7 @@
     <ClCompile Include="Tancodrom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -29,6 +30,7 @@
     <None Include="ShadowMappingDepth.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Shader.h">
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
