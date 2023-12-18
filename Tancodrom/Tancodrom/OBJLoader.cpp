@@ -1,12 +1,12 @@
 #include "OBJLoader.h"
 
-MeshLoader OBJLoader::Load(const std::string& filePath)
+Mesh OBJLoader::Load(const std::string& filePath)
 {
     std::vector<glm::vec3> positions;
     std::vector<glm::vec2> texCoords;
     std::vector<glm::vec3> normals;
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-    MeshLoader mesh;
+    Mesh mesh;
 
     std::ifstream file(filePath);
     std::string line;
@@ -52,9 +52,9 @@ MeshLoader OBJLoader::Load(const std::string& filePath)
     for (unsigned int i = 0; i < vertexIndices.size(); i++)
     {
         Vertex vertex;
-        vertex.position = positions[vertexIndices[i] - 1];
-        vertex.texCoords = texCoords[uvIndices[i] - 1];
-        vertex.normal = normals[normalIndices[i] - 1];
+        vertex.Position = positions[vertexIndices[i] - 1];
+        vertex.TexCoords = texCoords[uvIndices[i] - 1];
+        vertex.Normal = normals[normalIndices[i] - 1];
         mesh.vertices.push_back(vertex);
     }
 

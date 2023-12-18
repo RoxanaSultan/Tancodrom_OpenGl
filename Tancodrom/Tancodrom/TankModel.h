@@ -8,22 +8,22 @@
 #include "Mesh.h"
 #include "OBJLoader.h"
 
-struct Vertex
-{
-    // position
-    glm::vec3 Position;
-    // normal
-    glm::vec3 Normal;
-    // texCoords
-    glm::vec2 TexCoords;
-};
-
-struct Texture
-{
-    unsigned int id;
-    std::string type;
-    std::string path;
-};
+//struct Vertex
+//{
+//    // position
+//    glm::vec3 Position;
+//    // normal
+//    glm::vec3 Normal;
+//    // texCoords
+//    glm::vec2 TexCoords;
+//};
+//
+//struct Texture
+//{
+//    unsigned int id;
+//    std::string type;
+//    std::string path;
+//};
 
 class TankModel
 {

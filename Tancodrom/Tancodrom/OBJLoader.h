@@ -7,24 +7,22 @@
 #include <string>
 #include <GLM.hpp>
 
-struct Vertex
-{
-    glm::vec3 position;
-    glm::vec2 texCoords;
-    glm::vec3 normal;
-};
+#include "Mesh.h"
 
-struct MeshLoader
-{
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    // Add a constructor and methods to set up the mesh in OpenGL
-};
+//struct Vertex
+//{
+//    // position
+//    glm::vec3 Position;
+//    // normal
+//    glm::vec3 Normal;
+//    // texCoords
+//    glm::vec2 TexCoords;
+//};
 
 class OBJLoader
 {
 public:
-    static MeshLoader Load(const std::string& filePath);
+    static Mesh Load(const std::string& filePath);
 };
 
 // Usage:
