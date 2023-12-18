@@ -25,49 +25,17 @@ struct Texture
     std::string path;
 };
 
-class Model
+class TankModel
 {
 public:
-    Model(const std::string& path)
-    {
-        loadModel(path);
-    }
-
-    void Draw(Shader shader)
-    {
-        for (unsigned int i = 0; i < meshes.size(); i++)
-            meshes[i].Draw(shader);
-    }
+    TankModel(const std::string& path);
+    void Draw(Shader shader);
 
 private:
     std::vector<Mesh> meshes;
     std::string directory;
 
-    void loadModel(const std::string& path)
-    {
-        Mesh loadedMesh = OBJLoader::Load(path);
-        Mesh processedMesh = processMesh(loadedMesh);
-        meshes.push_back(processedMesh);
-    }
+    void loadModel(const std::string& path);
 
-    Mesh processMesh(const Mesh& loadedMesh)
-    {
-
-        Mesh processedMesh;
-        // Process vertices
-        for (const auto& vertex : loadedMesh.vertices)
-        {
-            Vertex processedVertex = vertex;
-            // Perform any vertex modifications here
-            processedMesh.vertices.push_back(processedVertex);
-        }
-
-        // Process indices (if needed)
-        processedMesh.indices = loadedMesh.indices;
-
-        // Setup the mesh (create VAO, VBO, etc.)
-        processedMesh.setupMesh();
-
-        return processedMesh;
-    }
+    Mesh processMesh(const Mesh& loadedMesh);
 };

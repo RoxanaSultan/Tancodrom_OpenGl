@@ -14,7 +14,7 @@ struct Vertex
     glm::vec3 normal;
 };
 
-struct Mesh
+struct MeshLoader
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -24,7 +24,7 @@ struct Mesh
 class OBJLoader
 {
 public:
-    static Mesh Load(const std::string& filePath);
+    static MeshLoader Load(const std::string& filePath);
 };
 
 // Usage:

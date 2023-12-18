@@ -1,12 +1,12 @@
 #include "OBJLoader.h"
 
-Mesh OBJLoader::Load(const std::string& filePath)
+MeshLoader OBJLoader::Load(const std::string& filePath)
 {
     std::vector<glm::vec3> positions;
     std::vector<glm::vec2> texCoords;
     std::vector<glm::vec3> normals;
     std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-    Mesh mesh;
+    MeshLoader mesh;
 
     std::ifstream file(filePath);
     std::string line;
