@@ -20,8 +20,7 @@
 
 #include "Camera.h"
 #include "Shader.h"
-#include "Mesh.h"
-#include "OBJLoader.h"
+#include "OBJ_Loader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
 #pragma comment (lib, "glew32.lib")
@@ -61,7 +60,8 @@ unsigned int CreateTexture(const std::string& strTexturePath)
         // set texture filtering parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    } else
+    }
+    else
     {
         std::cout << "Failed to load texture: " << strTexturePath << std::endl;
     }
@@ -80,12 +80,17 @@ void processInput(GLFWwindow* window);
 void renderScene(const Shader& shader);
 void renderCube();
 void renderFloor();
+void renderTank();
 
 
 // timing
 double deltaTime = 0.0f;	// time between current frame and last frame
 double lastFrame = 0.0f;
 
+
+std::string objFilePath = "TankModel.obj";
+objl::Loader loader;
+//std::cout << loader.LoadedMeshes[0].MeshName;
 
 int main(int argc, char** argv)
 {
@@ -101,10 +106,6 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-
-    std::string objFilePath = "C:\Facultate\ANUL II SEM I\G3D\Tancodrom_OpenGl\Tancodrom\Debug\TankModel.obj";
-    Mesh myMesh = OBJLoader::Load(objFilePath);
 
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Tancodrom", NULL, NULL);
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
     // -------------------------
     Shader shadowMappingShader("ShadowMapping.vs", "ShadowMapping.fs");
     Shader shadowMappingDepthShader("ShadowMappingDepth.vs", "ShadowMappingDepth.fs");
-    Shader TankModelShader("TankModelShader.vs", "TankModelShader.fs");
+    Shader TankShader("TankShader.vs", "TankShader.fs");
 
     // load textures
     // -------------
@@ -172,6 +173,9 @@ int main(int argc, char** argv)
     glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 
     glEnable(GL_CULL_FACE);
+
+    loader.LoadFile(objFilePath);
+    std::cout << loader.LoadedVertices.size();
 
     while (!glfwWindowShouldClose(window))
     {
@@ -245,17 +249,10 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
 
-
-        // Render
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Use shader program
-        TankModelShader.Use();
-        glm::mat4 tankModelMatrix = glm::mat4(1.0f); // Replace with appropriate transformations
-        TankModelShader.SetMat4("model", tankModelMatrix);
-        myMesh.Draw(TankModelShader);
-        renderScene(TankModelShader);
+        TankShader.Use();
+        glm::mat4 model = glm::mat4(1.0f);
+        TankShader.SetMat4("model", model);
+        renderTank();
 
 
         glfwSwapBuffers(window);
@@ -321,6 +318,42 @@ void renderFloor()
 
     glBindVertexArray(planeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+unsigned int tankVAO = 0;
+unsigned int tankVBO = 0;
+unsigned int tankEBO;
+void renderTank()
+{
+    
+    glGenVertexArrays(1, &tankVAO);
+    glGenBuffers(1, &tankVBO);
+    glGenBuffers(1, &tankEBO);
+
+    glBindVertexArray(tankVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, tankVBO);
+    std::cout << loader.LoadedVertices.size();
+    glBufferData(GL_ARRAY_BUFFER, loader.LoadedVertices.size() * sizeof(objl::Vertex), &loader.LoadedVertices[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tankEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, loader.LoadedIndices.size() * sizeof(unsigned int), &loader.LoadedIndices[0], GL_STATIC_DRAW);
+
+    // Set the vertex attribute pointers
+    // Vertex positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(objl::Vertex), (void*)0);
+
+    // Vertex normals
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(objl::Vertex), (void*)offsetof(objl::Vertex, objl::Vertex::Normal));
+
+    // Vertex texture coords
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(objl::Vertex), (void*)offsetof(objl::Vertex, objl::Vertex::TextureCoordinate));
+
+    glBindVertexArray(0);
+
 }
 
 unsigned int cubeVAO = 0;

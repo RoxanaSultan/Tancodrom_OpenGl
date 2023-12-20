@@ -132,26 +132,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tancodrom.cpp" />
-    <ClCompile Include="TankModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ShadowMapping.fs" />
     <None Include="ShadowMapping.vs" />
     <None Include="ShadowMappingDepth.fs" />
     <None Include="ShadowMappingDepth.vs" />
-    <None Include="TankModelShader.fs" />
-    <None Include="TankModelShader.vs" />
+    <None Include="TankShader.fs" />
+    <None Include="TankShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="TankModel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
