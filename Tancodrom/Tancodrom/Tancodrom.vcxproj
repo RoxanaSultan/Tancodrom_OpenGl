@@ -143,6 +143,8 @@
     <None Include="ShadowMapping.vs" />
     <None Include="ShadowMappingDepth.fs" />
     <None Include="ShadowMappingDepth.vs" />
+    <None Include="skybox.fs" />
+    <None Include="skybox.vs" />
     <None Include="TankModelShader.fs" />
     <None Include="TankModelShader.vs" />
   </ItemGroup>
@@ -152,6 +154,14 @@
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="TankModel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="skybox_images\skybox_back.jpg" />
+    <Image Include="skybox_images\skybox_bottom.jpg" />
+    <Image Include="skybox_images\skybox_front.jpg" />
+    <Image Include="skybox_images\skybox_left.jpg" />
+    <Image Include="skybox_images\skybox_right.jpg" />
+    <Image Include="skybox_images\skybox_top.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
