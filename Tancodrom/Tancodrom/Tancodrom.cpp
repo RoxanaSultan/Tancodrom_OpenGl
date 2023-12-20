@@ -247,15 +247,15 @@ int main(int argc, char** argv)
 
 
         // Render
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Use shader program
-        TankModelShader.Use();
-        glm::mat4 tankModelMatrix = glm::mat4(1.0f); // Replace with appropriate transformations
-        TankModelShader.SetMat4("model", tankModelMatrix);
-        myMesh.Draw(TankModelShader);
-        renderScene(TankModelShader);
+        //// Use shader program
+        //TankModelShader.Use();
+        //glm::mat4 tankModelMatrix = glm::mat4(1.0f); // Replace with appropriate transformations
+        //TankModelShader.SetMat4("model", tankModelMatrix);
+        //myMesh.Draw(TankModelShader);
+        //renderScene(TankModelShader);
 
 
         glfwSwapBuffers(window);
