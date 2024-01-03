@@ -2,7 +2,8 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2022, assimp team
+Copyright (c) 2006-2021, assimp team
+
 
 All rights reserved.
 
@@ -38,18 +39,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------
 */
+/** @file DefaultLogger.hpp
+*/
 
-/**
- *  @file DefaultLogger.hpp
- */
-
-#pragma once
 #ifndef INCLUDED_AI_DEFAULTLOGGER
 #define INCLUDED_AI_DEFAULTLOGGER
-
-#ifdef __GNUC__
-#   pragma GCC system_header
-#endif
 
 #include "LogStream.hpp"
 #include "Logger.hpp"
@@ -61,7 +55,7 @@ namespace Assimp {
 class IOStream;
 struct LogStreamInfo;
 
-/** default name of log-file */
+/** default name of logfile */
 #define ASSIMP_DEFAULT_LOG_NAME "AssimpLog.txt"
 
 // ------------------------------------------------------------------------------------
@@ -78,6 +72,7 @@ struct LogStreamInfo;
  *  implementation of #Logger to #set().
  *  @note The whole logging stuff causes a small extra overhead for all imports. */
 class ASSIMP_API DefaultLogger : public Logger {
+
 public:
     // ----------------------------------------------------------------------
     /** @brief Creates a logging instance.
@@ -126,11 +121,13 @@ public:
 
     // ----------------------------------------------------------------------
     /** @copydoc Logger::attachStream   */
-    bool attachStream(LogStream *pStream, unsigned int severity) override;
+    bool attachStream(LogStream *pStream,
+            unsigned int severity);
 
     // ----------------------------------------------------------------------
     /** @copydoc Logger::detachStream */
-    bool detachStream(LogStream *pStream, unsigned int severity) override;
+    bool detachStream(LogStream *pStream,
+            unsigned int severity);
 
 private:
     // ----------------------------------------------------------------------
@@ -140,22 +137,22 @@ private:
 
     // ----------------------------------------------------------------------
     /** @briefDestructor    */
-    ~DefaultLogger() override;
+    ~DefaultLogger();
 
     /** @brief  Logs debug infos, only been written when severity level DEBUG or higher is set */
-    void OnDebug(const char *message) override;
+    void OnDebug(const char *message);
 
     /** @brief  Logs debug infos, only been written when severity level VERBOSE is set */
-    void OnVerboseDebug(const char *message) override;
+    void OnVerboseDebug(const char *message);
 
     /** @brief  Logs an info message */
-    void OnInfo(const char *message) override;
+    void OnInfo(const char *message);
 
     /** @brief  Logs a warning message */
-    void OnWarn(const char *message) override;
+    void OnWarn(const char *message);
 
     /** @brief  Logs an error message */
-    void OnError(const char *message) override;
+    void OnError(const char *message);
 
     // ----------------------------------------------------------------------
     /** @brief Writes a message to all streams */
@@ -170,9 +167,9 @@ private:
 
 private:
     //  Aliases for stream container
-    using StreamArray = std::vector<LogStreamInfo *>;
-    using StreamIt = std::vector<LogStreamInfo *>::iterator;
-    using ConstStreamIt = std::vector<LogStreamInfo *>::const_iterator;
+    typedef std::vector<LogStreamInfo *> StreamArray;
+    typedef std::vector<LogStreamInfo *>::iterator StreamIt;
+    typedef std::vector<LogStreamInfo *>::const_iterator ConstStreamIt;
 
     //! only logging instance
     static Logger *m_pLogger;
@@ -185,7 +182,6 @@ private:
     char lastMsg[MAX_LOG_MESSAGE_LENGTH * 2];
     size_t lastLen;
 };
-
 // ------------------------------------------------------------------------------------
 
 } // Namespace Assimp

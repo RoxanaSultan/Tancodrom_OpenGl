@@ -3,7 +3,9 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2022, assimp team
+Copyright (c) 2006-2021, assimp team
+
+
 
 All rights reserved.
 
@@ -42,19 +44,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file Provides cheat implementations for IOSystem and IOStream to
  *  redirect exporter output to a blob chain.*/
 
-#pragma once
 #ifndef AI_BLOBIOSYSTEM_H_INCLUDED
 #define AI_BLOBIOSYSTEM_H_INCLUDED
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
 #include <assimp/cexport.h>
+#include <stdint.h>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/IOStream.hpp>
 #include <assimp/IOSystem.hpp>
-#include <cstdint>
 #include <set>
 #include <vector>
 
@@ -66,10 +63,6 @@ class BlobIOSystem;
 // --------------------------------------------------------------------------------------------
 class BlobIOStream : public IOStream {
 public:
-    /// @brief The class constructor with all needed parameters
-    /// @param creator  Pointer to the creator instance
-    /// @param file     The filename
-    /// @param initial  The initial size
     BlobIOStream(BlobIOSystem *creator, const std::string &file, size_t initial = 4096) :
             buffer(),
             cur_size(),
@@ -81,8 +74,7 @@ public:
         // empty
     }
 
-    ///	@brief  The class destructor.
-    ~BlobIOStream() override;
+    virtual ~BlobIOStream();
 
 public:
     // -------------------------------------------------------------------
@@ -97,12 +89,16 @@ public:
     }
 
     // -------------------------------------------------------------------
-    size_t Read(void *, size_t, size_t) override {
+    virtual size_t Read(void *,
+            size_t,
+            size_t) {
         return 0;
     }
 
     // -------------------------------------------------------------------
-    size_t Write(const void *pvBuffer, size_t pSize, size_t pCount) override {
+    virtual size_t Write(const void *pvBuffer,
+            size_t pSize,
+            size_t pCount) {
         pSize *= pCount;
         if (cursor + pSize > cur_size) {
             Grow(cursor + pSize);
@@ -116,22 +112,23 @@ public:
     }
 
     // -------------------------------------------------------------------
-    aiReturn Seek(size_t pOffset, aiOrigin pOrigin) override {
+    virtual aiReturn Seek(size_t pOffset,
+            aiOrigin pOrigin) {
         switch (pOrigin) {
-            case aiOrigin_CUR:
-                cursor += pOffset;
-                break;
+        case aiOrigin_CUR:
+            cursor += pOffset;
+            break;
 
-            case aiOrigin_END:
-                cursor = file_size - pOffset;
-                break;
+        case aiOrigin_END:
+            cursor = file_size - pOffset;
+            break;
 
-            case aiOrigin_SET:
-                cursor = pOffset;
-                break;
+        case aiOrigin_SET:
+            cursor = pOffset;
+            break;
 
-            default:
-                return AI_FAILURE;
+        default:
+            return AI_FAILURE;
         }
 
         if (cursor > file_size) {
@@ -139,22 +136,21 @@ public:
         }
 
         file_size = std::max(cursor, file_size);
-
         return AI_SUCCESS;
     }
 
     // -------------------------------------------------------------------
-    size_t Tell() const override {
+    virtual size_t Tell() const {
         return cursor;
     }
 
     // -------------------------------------------------------------------
-    size_t FileSize() const override {
+    virtual size_t FileSize() const {
         return file_size;
     }
 
     // -------------------------------------------------------------------
-    void Flush() override {
+    virtual void Flush() {
         // ignore
     }
 
@@ -200,19 +196,15 @@ class BlobIOSystem : public IOSystem {
 
 
 public:
-    /// @brief The default class constructor.
     BlobIOSystem() :
             baseName{AI_BLOBIO_MAGIC} {
     }
 
-    ///	@brief  The class constructor with the base name.
-    /// @param baseName     The base name.
     BlobIOSystem(const std::string &baseName) :
             baseName(baseName) {
-        // empty
     }
 
-    ~BlobIOSystem() override {
+    virtual ~BlobIOSystem() {
         for (BlobEntry &blobby : blobs) {
             delete blobby.second;
         }
@@ -271,17 +263,18 @@ public:
 
 public:
     // -------------------------------------------------------------------
-    bool Exists(const char *pFile) const override {
+    virtual bool Exists(const char *pFile) const {
         return created.find(std::string(pFile)) != created.end();
     }
 
     // -------------------------------------------------------------------
-    char getOsSeparator() const override {
+    virtual char getOsSeparator() const {
         return '/';
     }
 
     // -------------------------------------------------------------------
-    IOStream *Open(const char *pFile, const char *pMode) override {
+    virtual IOStream *Open(const char *pFile,
+            const char *pMode) {
         if (pMode[0] != 'w') {
             return nullptr;
         }
@@ -291,7 +284,7 @@ public:
     }
 
     // -------------------------------------------------------------------
-    void Close(IOStream *pFile) override {
+    virtual void Close(IOStream *pFile) {
         delete pFile;
     }
 
@@ -301,7 +294,7 @@ private:
         // we don't know in which the files are closed, so we
         // can't reliably say that the first must be the master
         // file ...
-        blobs.emplace_back(filename, child->GetBlob());
+        blobs.push_back(BlobEntry(filename, child->GetBlob()));
     }
 
 private:
@@ -311,10 +304,8 @@ private:
 };
 
 // --------------------------------------------------------------------------------------------
-BlobIOStream::~BlobIOStream() {
-    if (nullptr != creator) {
-        creator->OnDestruct(file, this);
-    }
+BlobIOStream ::~BlobIOStream() {
+    creator->OnDestruct(file, this);
     delete[] buffer;
 }
 

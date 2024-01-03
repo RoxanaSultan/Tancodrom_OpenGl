@@ -11,9 +11,9 @@
 
 #include <glfw3.h>
 
-#include <Importer.hpp>
-#include <scene.h>
-#include <postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include <iostream>
 #include <fstream>

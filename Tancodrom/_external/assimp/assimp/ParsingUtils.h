@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2022, assimp team
+Copyright (c) 2006-2021, assimp team
 
 All rights reserved.
 
@@ -69,6 +69,7 @@ namespace Assimp {
 // use since it doesn't have multi-byte sequences.
 
 static const unsigned int BufferSize = 4096;
+
 
 // ---------------------------------------------------------------------------------
 template <class char_t>
