@@ -176,7 +176,7 @@ int main(int argc, char** argv)
 
     // load textures
     // -------------
-    unsigned int floorTexture = CreateTexture(strExePath + "\\FloorTexture.png");
+    unsigned int floorTexture = CreateTexture(strExePath + "\\skybox_bottom.jpg");
 
     // configure depth map FBO
     // -----------------------
@@ -242,6 +242,7 @@ int main(int argc, char** argv)
 
     //unsigned int cubemapTexture = loadCubemap(faces);
     unsigned int cubemapTexture;
+
     glGenTextures(1, &cubemapTexture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
@@ -272,6 +273,7 @@ int main(int argc, char** argv)
             );
             //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
             //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGetError();
             stbi_image_free(data);
         }
         else
