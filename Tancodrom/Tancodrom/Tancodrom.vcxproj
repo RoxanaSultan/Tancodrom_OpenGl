@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)_external\stb-master;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)_external\glew-2.1.0\lib\Release\Win32;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)_external\stb-master;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glew-2.1.0\include;$(SolutionDir)_external\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)_externam\assimp\lib\assimp-vc142-mt.lib;$(SolutionDir)_external\glew-2.1.0\lib\Release\Win32;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,6 +80,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,11 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tancodrom.cpp" />
-    <ClCompile Include="TankModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ShadowMapping.fs" />
@@ -150,10 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="TankModel.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="skybox_images\skybox_back.jpg" />
