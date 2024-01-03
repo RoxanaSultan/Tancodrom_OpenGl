@@ -11,6 +11,10 @@
 
 #include <glfw3.h>
 
+#include <Importer.hpp>
+#include <scene.h>
+#include <postprocess.h>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
