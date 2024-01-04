@@ -28,8 +28,8 @@
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "OpenGL32.lib")
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 900;
 
 
 Camera* pCamera = nullptr;
@@ -82,8 +82,7 @@ void processInput(GLFWwindow* window);
 void renderScene(const Shader& shader);
 void renderCube();
 void renderFloor();
-void renderTank();
-
+void renderTank(Shader& ourShader, Model& ourTankModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale);
 
 // timing
 double deltaTime = 0.0f;	// time between current frame and last frame
@@ -154,7 +153,7 @@ int main(int argc, char** argv)
 
     glewInit();
 
-    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
+    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 4.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
 
@@ -337,19 +336,6 @@ int main(int argc, char** argv)
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        TankModelShader.Use();
-        glm::mat4 modelMatrix = glm::mat4(1.0f); // Initialize model matrix (replace with actual transformations)
-        glm::mat4 viewMatrix = pCamera->GetViewMatrix(); // Assuming you have a camera class
-        glm::mat4 projectionMatrix = pCamera->GetProjectionMatrix();
-
-        // Set shader uniforms
-        TankModelShader.SetMat4("model", modelMatrix);
-        TankModelShader.SetMat4("view", viewMatrix);
-        TankModelShader.SetMat4("projection", projectionMatrix);
-
-        // Draw the model
-        myModel.Draw(TankModelShader);
-
 
         // 2. render scene as normal using the generated depth/shadow map 
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
@@ -369,6 +355,23 @@ int main(int argc, char** argv)
         glBindTexture(GL_TEXTURE_2D, depthMap);
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
+
+
+        glm::vec3 tankPosition = glm::vec3(0.0f, 4.0f, 0.0f); // Replace with desired position
+        float tankRotation = 45.0f;
+        glm::vec3 tankScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        renderTank(TankModelShader, myModel, tankPosition, tankRotation, tankScale);
+
+
+        glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
+        glm::vec3 lightDir = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f)); // Example direction
+        glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f); // Example color (rust)
+
+        TankModelShader.Use();
+        TankModelShader.SetVec3("lightColor", lightColor);
+        TankModelShader.SetVec3("lightDir", lightDir);
+        TankModelShader.SetVec3("objectColor", objectColor);
 
         glDepthFunc(GL_LEQUAL);
         glDepthMask(GL_FALSE);
@@ -427,7 +430,7 @@ void renderScene(const Shader& shader)
     model = glm::translate(model, glm::vec3(0.0f, 1.75f, 0.0));
     model = glm::scale(model, glm::vec3(0.75f));
     shader.SetMat4("model", model);
-    renderCube();
+    //renderCube();
 
 }
 
@@ -472,37 +475,27 @@ void renderFloor()
 unsigned int tankVAO = 0;
 unsigned int tankVBO = 0;
 unsigned int tankEBO;
-void renderTank()
-{
+void renderTank(Shader& ourShader, Model& ourTankModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale) {
+    // Activate the shader program
+    ourShader.Use();
 
-    glGenVertexArrays(1, &tankVAO);
-    glGenBuffers(1, &tankVBO);
-    glGenBuffers(1, &tankEBO);
+    // Create transformation matrices
+    glm::mat4 model = glm::mat4(1.0f); // Start with the identity matrix
+    model = glm::translate(model, position); // Move the tank to the specified position
+    model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the tank
+    model = glm::scale(model, scale); // Scale the tank
 
-    glBindVertexArray(tankVAO);
+    glm::mat4 viewMatrix = pCamera->GetViewMatrix(); // Assuming you have a camera class
+    glm::mat4 projectionMatrix = pCamera->GetProjectionMatrix();
 
-    glBindBuffer(GL_ARRAY_BUFFER, tankVBO);
-    //std::cout << loader.LoadedVertices.size();
-    //glBufferData(GL_ARRAY_BUFFER, loader.LoadedVertices.size() * sizeof(objl::Vertex), &loader.LoadedVertices[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tankEBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, loader.LoadedIndices.size() * sizeof(unsigned int), &loader.LoadedIndices[0], GL_STATIC_DRAW);
+    // Pass the transformation matrices to the shader
+    ourShader.SetMat4("model", model);
+    ourShader.SetMat4("view", viewMatrix);
+    ourShader.SetMat4("projection", projectionMatrix);
 
-    // Set the vertex attribute pointers
-    // Vertex positions
-    glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(objl::Vertex), (void*)0);
-
-    // Vertex normals
-    glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(objl::Vertex), (void*)offsetof(objl::Vertex, objl::Vertex::Normal));
-
-     // Vertex texture coords
-    glEnableVertexAttribArray(2);
-    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(objl::Vertex), (void*)offsetof(objl::Vertex, objl::Vertex::TextureCoordinate));
-
-    glBindVertexArray(0);
-
+    // Draw the tank model
+    ourTankModel.Draw(ourShader);
 }
 
 unsigned int cubeVAO = 0;
