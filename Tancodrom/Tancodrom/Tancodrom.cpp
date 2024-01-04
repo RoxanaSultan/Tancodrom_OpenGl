@@ -274,7 +274,7 @@ int main(int argc, char** argv)
         }
     }
 
-    Model myModel(objFilePath);
+    Model myModel(strExePath + '\\' + objFilePath);
 
     while (!glfwWindowShouldClose(window))
     {
