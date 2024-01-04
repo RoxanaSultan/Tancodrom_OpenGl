@@ -80,14 +80,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)_external\assimp;$(SolutionDir)_external\glew-2.1.0\include;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\stb-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)_external\assimp\include;$(SolutionDir)_external\glew-2.1.0\include;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\stb-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>"$(SolutionDir)\_external\assimp\lib\assimp.lib" "$(SolutionDir)\_external\glew-2.1.0\lib\Release\Win32\*.lib" "$(SolutionDir)\_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019\glfw3.lib" "$(SolutionDir)\_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019\glfw3dll.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)_external\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"$(SolutionDir)_external\assimp\lib\assimp-vc140-mt.lib" "$(SolutionDir)_external\glew-2.1.0\lib\Release\Win32\*.lib" "$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019\glfw3.lib" "$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019\glfw3dll.lib" %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
