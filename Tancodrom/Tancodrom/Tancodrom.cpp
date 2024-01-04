@@ -422,6 +422,8 @@ void renderScene(const Shader& shader)
 {
     // floor
     glm::mat4 model;
+    float deltaY = -1.0f;
+    model = glm::translate(model, glm::vec3(0.0f, deltaY, 0.0f));
     shader.SetMat4("model", model);
     renderFloor();
 
