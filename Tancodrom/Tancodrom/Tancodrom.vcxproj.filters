@@ -4,18 +4,32 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tancodrom.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="OBJ_Loader.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ShadowMapping.fs" />
     <None Include="ShadowMapping.vs" />
     <None Include="ShadowMappingDepth.fs" />
     <None Include="ShadowMappingDepth.vs" />
-    <None Include="TankShader.vs" />
-    <None Include="TankShader.fs" />
+    <None Include="skybox.fs" />
+    <None Include="skybox.vs" />
+    <None Include="TankModelShader.fs" />
+    <None Include="TankModelShader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="skybox_images\skybox_back.jpg" />
+    <Image Include="skybox_images\skybox_bottom.jpg" />
+    <Image Include="skybox_images\skybox_front.jpg" />
+    <Image Include="skybox_images\skybox_left.jpg" />
+    <Image Include="skybox_images\skybox_right.jpg" />
+    <Image Include="skybox_images\skybox_top.jpg" />
   </ItemGroup>
 </Project>

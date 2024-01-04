@@ -18,10 +18,10 @@
 #include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 
 #include "Camera.h"
 #include "Shader.h"
+#include "Model.h"
 //#include "OBJ_Loader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
@@ -30,17 +30,6 @@
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-
-
-
-//unsigned int loadCubemap(std::vector<std::string>& faces)
-//{
-//    
-//
-//
-//    return textureID;
-//}
 
 
 Camera* pCamera = nullptr;
@@ -130,7 +119,7 @@ unsigned int skyboxIndices[] =
 
 
 
-std::string objFilePath = "TankModel.obj";
+std::string objFilePath = "TankObject.obj";
 //objl::Loader loader;
 //std::cout << loader.LoadedMeshes[0].MeshName;
 
@@ -285,6 +274,8 @@ int main(int argc, char** argv)
         }
     }
 
+    Model myModel(objFilePath);
+
     while (!glfwWindowShouldClose(window))
     {
         
@@ -345,6 +336,20 @@ int main(int argc, char** argv)
         // reset viewport
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        TankModelShader.Use();
+        glm::mat4 modelMatrix = glm::mat4(1.0f); // Initialize model matrix (replace with actual transformations)
+        glm::mat4 viewMatrix = pCamera->GetViewMatrix(); // Assuming you have a camera class
+        glm::mat4 projectionMatrix = pCamera->GetProjectionMatrix();
+
+        // Set shader uniforms
+        TankModelShader.SetMat4("model", modelMatrix);
+        TankModelShader.SetMat4("view", viewMatrix);
+        TankModelShader.SetMat4("projection", projectionMatrix);
+
+        // Draw the model
+        myModel.Draw(TankModelShader);
+
 
         // 2. render scene as normal using the generated depth/shadow map 
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);

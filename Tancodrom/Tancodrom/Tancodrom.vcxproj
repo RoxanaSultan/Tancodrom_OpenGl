@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)_external\stb-master;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glew-2.1.0\include;$(SolutionDir)_external\assimp;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)_externam\assimp\lib\assimp-vc142-mt.lib;$(SolutionDir)_external\glew-2.1.0\lib\Release\Win32;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,11 +80,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)_external\assimp;$(SolutionDir)_external\glew-2.1.0\include;$(SolutionDir)_external\glm-stable\glm;$(SolutionDir)_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\include\GLFW;$(SolutionDir)_external\stb-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"$(SolutionDir)\_external\assimp\lib\assimp.lib" "$(SolutionDir)\_external\glew-2.1.0\lib\Release\Win32\*.lib" "$(SolutionDir)\_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019\glfw3.lib" "$(SolutionDir)\_external\glfw-3.3.4.bin.WIN32\glfw-3.3.4.bin.WIN32\lib-vc2019\glfw3dll.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,6 +136,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tancodrom.cpp" />
   </ItemGroup>
@@ -148,6 +153,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
