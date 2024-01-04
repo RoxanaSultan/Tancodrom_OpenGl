@@ -116,13 +116,15 @@ unsigned int skyboxIndices[] =
     6,2,3
 };
 
+double currentMoveTank = 0.0f;
+
 std::vector<glm::vec3> tanksPositions =
 {
     glm::vec3(0.0f, -1.55f, 0.0f),
-    glm::vec3(5.0f, -1.55f, 0.0f),
-    glm::vec3(10.0f, -1.55f, 0.0f),
+    glm::vec3(5.0f, -1.55f, 1.0f),
+    glm::vec3(10.0f, -1.55f, 1.5f),
     glm::vec3(-5.0f, -1.55f, 0.0f),
-    glm::vec3(-10.0f, -1.55f, 0.0f)
+    glm::vec3(-10.0f, -1.55f, 2.0f)
 };
 
 std::string objFilePath = "tank.obj";
@@ -337,14 +339,14 @@ int main(int argc, char** argv)
         glCullFace(GL_FRONT);
         renderScene(shadowMappingDepthShader);
 
-      
+        currentMoveTank += 0.0005;
 
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
 
         for (auto& tankPosition : tanksPositions)
         {
-            renderTank(shadowMappingDepthShader, myModel, tankPosition, tankRotation, tankScale);
+            renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
         }
 
         glCullFace(GL_BACK);
@@ -376,7 +378,7 @@ int main(int argc, char** argv)
 
         for (auto& tankPosition : tanksPositions)
         {
-            renderTank(TankModelShader, myModel, tankPosition, tankRotation, tankScale);
+            renderTank(TankModelShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
         }
 
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
