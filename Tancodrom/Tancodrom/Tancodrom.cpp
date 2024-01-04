@@ -116,7 +116,14 @@ unsigned int skyboxIndices[] =
     6,2,3
 };
 
-
+std::vector<glm::vec3> tanksPositions =
+{
+    glm::vec3(0.0f, -1.55f, 0.0f),
+    glm::vec3(5.0f, -1.55f, 0.0f),
+    glm::vec3(10.0f, -1.55f, 0.0f),
+    glm::vec3(-5.0f, -1.55f, 0.0f),
+    glm::vec3(-10.0f, -1.55f, 0.0f)
+};
 
 std::string objFilePath = "tank.obj";
 //objl::Loader loader;
@@ -153,7 +160,7 @@ int main(int argc, char** argv)
 
     glewInit();
 
-    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 4.0f, 0.0f));
+    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 7.0f, 10.0f));
 
     glEnable(GL_DEPTH_TEST);
 
@@ -312,8 +319,8 @@ int main(int argc, char** argv)
 
         glm::vec4 rotatedLightPos = lightRotationMatrix * glm::vec4(lightPos, 1.0f);
 
-        float near_plane = 1.0f, far_plane = 57.5f;
-        lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        float near_plane = 1.0f, far_plane = 10.5f;
+        lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, near_plane, far_plane);
         lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
 
@@ -330,11 +337,15 @@ int main(int argc, char** argv)
         glCullFace(GL_FRONT);
         renderScene(shadowMappingDepthShader);
 
-        glm::vec3 tankPosition = glm::vec3(0.0f, 1.0f, 0.0f); // Replace with desired position
-        float tankRotation = 45.0f;
+      
+
+        float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
 
-        renderTank(shadowMappingDepthShader, myModel, tankPosition, tankRotation, tankScale);
+        for (auto& tankPosition : tanksPositions)
+        {
+            renderTank(shadowMappingDepthShader, myModel, tankPosition, tankRotation, tankScale);
+        }
 
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -363,7 +374,10 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
 
-        renderTank(TankModelShader, myModel, tankPosition, tankRotation, tankScale);
+        for (auto& tankPosition : tanksPositions)
+        {
+            renderTank(TankModelShader, myModel, tankPosition, tankRotation, tankScale);
+        }
 
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
         glm::vec3 lightDir = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f)); // Example direction
