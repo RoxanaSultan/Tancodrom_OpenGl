@@ -37,6 +37,8 @@ bool isDayTime = false;
 Camera* pCamera = nullptr;
 bool isTankMoving = false;
 bool isHelicopterMoving = false;
+bool thirdPersonView = true;
+bool freeCameraView = true;
 
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
@@ -228,7 +230,7 @@ int main(int argc, char** argv)
 
     glewInit();
 
-    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 7.0f, 10.0f));
+    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 7.0f, 25.0f));
 
     glEnable(GL_DEPTH_TEST);
 
@@ -737,28 +739,68 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
     {
+        pCamera->Set(SCR_WIDTH, SCR_HEIGHT, tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 5.5f));
+        freeCameraView = false;
         isHelicopterMoving = false;
         isTankMoving = true;
     }
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
     {
+        pCamera->Set(SCR_WIDTH, SCR_HEIGHT, helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
+        freeCameraView = false;
         isTankMoving = false;
         isHelicopterMoving = true;
     }
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+    {
+        if (isTankMoving)
+            pCamera->Set(SCR_WIDTH, SCR_HEIGHT, tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 5.5f));
 
+        if (isHelicopterMoving)
+            pCamera->Set(SCR_WIDTH, SCR_HEIGHT, helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
+        thirdPersonView = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+    {
+        if (isTankMoving)
+            pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
 
+        if (isHelicopterMoving)
+            pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
+        thirdPersonView = false;
+    }
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+    {
+        freeCameraView = true;
+        pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
+        isTankMoving = false;
+        isHelicopterMoving = false;
+    }
 
     //tank Movement
     if(isTankMoving)
     {
+
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
             tankVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+            pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
+        }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
             tankVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+            pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
+        }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
             tankVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
+            pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+        }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+            pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
+        }
     }
 
     if (isHelicopterMoving)
@@ -767,25 +809,27 @@ void processInput(GLFWwindow* window)
         {
             helicopterVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
             propeller.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+            pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
             propeller.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+            pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
             propeller.ProcessKeyboard(V_LEFT, (float)deltaTime);
+            pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
             propeller.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+            pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
         }
     }
-
-
 
     if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
         pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
@@ -821,10 +865,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    pCamera->MouseControl((float)xpos, (float)ypos);
+    if(freeCameraView)
+        pCamera->MouseControl((float)xpos, (float)ypos);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yOffset)
 {
-    pCamera->ProcessMouseScroll((float)yOffset);
+    if (freeCameraView)
+        pCamera->ProcessMouseScroll((float)yOffset);
 }
