@@ -141,6 +141,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tancodrom.cpp" />
+    <ClCompile Include="Vehicle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ShadowMapping.fs" />
@@ -149,8 +150,8 @@
     <None Include="ShadowMappingDepth.vs" />
     <None Include="skybox.fs" />
     <None Include="skybox.vs" />
-    <None Include="TankModelShader.fs" />
-    <None Include="TankModelShader.vs" />
+    <None Include="ModelShader.fs" />
+    <None Include="ModelShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Vehicle.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="skybox_images\skybox_back.jpg" />
