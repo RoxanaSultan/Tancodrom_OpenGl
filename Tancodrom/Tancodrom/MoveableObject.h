@@ -7,7 +7,7 @@
 
 #include "Model.h"
 
-enum VehicleMovementType
+enum MovementType
 {
     V_UNKNOWN,
     V_FORWARD,
@@ -16,7 +16,7 @@ enum VehicleMovementType
     V_RIGHT
 };
 
-class Vehicle
+class MoveableObject
 {
 private:
     const float zNEAR = 0.1f;
@@ -24,13 +24,13 @@ private:
     const float YAW = -90.0f;
     const float FOV = 45.0f;
     glm::vec3 startPosition;
-    Model vehicleModel;
+    Model objectModel;
 
 public:
-    Vehicle() = default;
-    Vehicle(Model model, const int width, const int height, const glm::vec3& position);
+    MoveableObject() = default;
+    MoveableObject(Model model, const int width, const int height, const glm::vec3& position);
 
-    Vehicle& operator=(const Vehicle& othervehicle);
+    MoveableObject& operator=(const MoveableObject& othervehicle);
 
     void Set(const int width, const int height, const glm::vec3& position);
 
@@ -40,14 +40,14 @@ public:
 
     const glm::mat4 GetProjectionMatrix() const;
 
-    void ProcessKeyboard(VehicleMovementType direction, float deltaTime);
+    void ProcessKeyboard(MovementType direction, float deltaTime);
 
     Model& getVehicleModel();
 
     float getRotation();
 
 private:
-    void UpdateVehicleVectors();
+    void UpdateObjectVectors();
 
 protected:
     const float vehicleSpeedFactor = 2.5f;

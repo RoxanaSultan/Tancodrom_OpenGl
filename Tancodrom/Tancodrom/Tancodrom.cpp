@@ -22,7 +22,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Model.h"
-#include "Vehicle.h"
+#include "MoveableObject.h"
 //#include "OBJ_Loader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
@@ -136,9 +136,9 @@ std::string mountainFilePath = "mountain.obj";
 //std::cout << loader.LoadedMeshes[0].MeshName;
 
 
-Model tankModel;
+Model tankModel, helicopterModel, propellerModel;
 
-Vehicle tankVehicle;
+MoveableObject tankVehicle, helicopterVehicle, propeller;
 
 std::vector<glm::vec3> mountainsPositions =
 {
@@ -366,42 +366,14 @@ int main(int argc, char** argv)
         }
 
     tankModel = Model(strExePath + '\\' + objFilePath);
-    tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
+    tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
+
+    
 
     Model mountainModel(strExePath + '\\' + mountainFilePath);
 
     while (!glfwWindowShouldClose(window))
     {
-        //int width, height, nrChannels;
-        //for (unsigned int i = 0; i < faces.size(); i++)
-        //{
-        //    unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-        //    if (data)
-        //    {
-        //        stbi_set_flip_vertically_on_load(false);
-        //        glTexImage2D
-        //        (
-        //            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-        //            0,
-        //            GL_RGB,
-        //            width,
-        //            height,
-        //            0,
-        //            GL_RGB,
-        //            GL_UNSIGNED_BYTE,
-        //            data
-        //        );
-        //        //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-        //        //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        //        glGetError();
-        //        stbi_image_free(data);
-        //    }
-        //    else
-        //    {
-        //        std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-        //        stbi_image_free(data);
-        //    }
-        //}
         
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);

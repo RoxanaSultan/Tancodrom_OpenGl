@@ -1,21 +1,21 @@
-#include "Vehicle.h"
+#include "MoveableObject.h"
 
-Vehicle::Vehicle(Model model, const int width, const int height, const glm::vec3& position)
+MoveableObject::MoveableObject(Model model, const int width, const int height, const glm::vec3& position)
 {
-    vehicleModel = model;
+    objectModel = model;
 	startPosition = position;
 	Set(width, height, position);
 }
 
-Vehicle& Vehicle::operator=(const Vehicle& otherVehicle)
+MoveableObject& MoveableObject::operator=(const MoveableObject& otherObject)
 {
-    vehicleModel = otherVehicle.vehicleModel;
-    startPosition = otherVehicle.startPosition;
-    Set(otherVehicle.width, otherVehicle.height, otherVehicle.position);
+    objectModel = otherObject.objectModel;
+    startPosition = otherObject.startPosition;
+    Set(otherObject.width, otherObject.height, otherObject.position);
     return *this;
 }
 
-void Vehicle::Set(const int width, const int height, const glm::vec3 & position)
+void MoveableObject::Set(const int width, const int height, const glm::vec3 & position)
 {
     this->isPerspective = true;
     this->yaw = YAW;
@@ -32,15 +32,15 @@ void Vehicle::Set(const int width, const int height, const glm::vec3 & position)
     lastX = width / 2.0f;
     lastY = height / 2.0f;
 
-    UpdateVehicleVectors();
+    UpdateObjectVectors();
 }
 
-const glm::vec3 Vehicle::GetPosition() const
+const glm::vec3 MoveableObject::GetPosition() const
 {
 	return position;
 }
 
-const glm::mat4 Vehicle::GetProjectionMatrix() const
+const glm::mat4 MoveableObject::GetProjectionMatrix() const
 {
     glm::mat4 Proj = glm::mat4(1);
     if (isPerspective)
@@ -57,41 +57,41 @@ const glm::mat4 Vehicle::GetProjectionMatrix() const
     return Proj;
 }
 
-void Vehicle::ProcessKeyboard(VehicleMovementType direction, float deltaTime)
+void MoveableObject::ProcessKeyboard(MovementType direction, float deltaTime)
 {
     float velocity = (float)(vehicleSpeedFactor * deltaTime);
     switch (direction)
     {
-    case VehicleMovementType::V_FORWARD:
+    case MovementType::V_FORWARD:
         position += forward * velocity;
         break;
-    case VehicleMovementType::V_BACKWARD:
+    case MovementType::V_BACKWARD:
         position -= forward * velocity;
         break;
-    case VehicleMovementType::V_LEFT:
+    case MovementType::V_LEFT:
         rotation += 10.5f * velocity;
         yaw -= 10.5f * velocity;
-        UpdateVehicleVectors();
+        UpdateObjectVectors();
         break;
-    case VehicleMovementType::V_RIGHT:
+    case MovementType::V_RIGHT:
         rotation -= 10.5f * velocity;
         yaw += 10.5f * velocity;
-        UpdateVehicleVectors();
+        UpdateObjectVectors();
         break;
     }
 }
 
-Model& Vehicle::getVehicleModel()
+Model& MoveableObject::getVehicleModel()
 {
-    return vehicleModel;
+    return objectModel;
 }
 
-float Vehicle::getRotation()
+float MoveableObject::getRotation()
 {
     return rotation;
 }
 
-void Vehicle::UpdateVehicleVectors()
+void MoveableObject::UpdateObjectVectors()
 {
     // Calculate the new forward vector
     this->forward.x = cos(glm::radians(yaw));
