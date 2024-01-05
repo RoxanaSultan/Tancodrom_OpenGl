@@ -22,7 +22,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Model.h"
-#include "Vehicle.h"
+#include "MoveableObject.h"
 //#include "OBJ_Loader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
@@ -35,7 +35,8 @@ bool isDayTime = false;
 
 
 Camera* pCamera = nullptr;
-bool isVehicleMoving = false;
+bool isTankMoving = false;
+bool isHelicopterMoving = false;
 
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
@@ -120,29 +121,32 @@ unsigned int skyboxIndices[] =
 };
 
 double currentMoveTank = 0.0f;
+double currentRotatePropeller = 0.0f;
 
 std::vector<glm::vec3> tanksPositions =
 {
-    glm::vec3(0.0f, -1.55f, 0.0f),
-    glm::vec3(5.0f, -1.55f, 1.0f),
-    glm::vec3(10.0f, -1.55f, 1.5f),
-    glm::vec3(-5.0f, -1.55f, 0.0f),
-    glm::vec3(-10.0f, -1.55f, 2.0f)
+    glm::vec3(5.0f, -1.55f, 10.0f),
+    glm::vec3(-5.0f, -1.55f, 10.5f),
+    glm::vec3(10.0f, -1.55f, 20.0f),
+    glm::vec3(-10.0f, -1.55f, 20.0f),
+    glm::vec3(0.0f, -1.55f, 20.0f)
 };
 
-std::string objFilePath = "tank.obj";
+std::string tankFilePath = "tank.obj";
 std::string mountainFilePath = "mountain.obj";
+std::string helicopterPath = "body.obj";
+std::string propellerPath = "propeller.obj";
 //objl::Loader loader;
 //std::cout << loader.LoadedMeshes[0].MeshName;
 
 
-Model tankModel;
+Model tankModel, helicopterModel, propellerModel;
 
-Vehicle tankVehicle;
+MoveableObject tankVehicle, helicopterVehicle, propeller;
 
 std::vector<glm::vec3> mountainsPositions =
 {
-    glm::vec3(-10.5f, -1.55f, 10.0f),
+    glm::vec3(-20.5f, -1.55f, 10.0f),
     glm::vec3(50.0f, -1.55f, -25.0f),
     glm::vec3(20.0f, -1.55f, 20.0f),
     glm::vec3(-35.0f, -1.55f, -15.0f),
@@ -365,43 +369,21 @@ int main(int argc, char** argv)
             }
         }
 
-    tankModel = Model(strExePath + '\\' + objFilePath);
-    tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
+    tankModel = Model(strExePath + '\\' + tankFilePath);
+    tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
+
+    helicopterModel = Model(strExePath + '\\' + helicopterPath);
+    helicopterVehicle = MoveableObject(helicopterModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 5.0f, 0.0f));
+    helicopterVehicle.setRotation(90.0f);
+    
+    propellerModel = Model(strExePath + '\\' + propellerPath);
+    propeller = MoveableObject(propellerModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 6.0f, 0.0f));
 
     Model mountainModel(strExePath + '\\' + mountainFilePath);
+    Model tankModel(strExePath + '\\' + tankFilePath);
 
     while (!glfwWindowShouldClose(window))
     {
-        //int width, height, nrChannels;
-        //for (unsigned int i = 0; i < faces.size(); i++)
-        //{
-        //    unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-        //    if (data)
-        //    {
-        //        stbi_set_flip_vertically_on_load(false);
-        //        glTexImage2D
-        //        (
-        //            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-        //            0,
-        //            GL_RGB,
-        //            width,
-        //            height,
-        //            0,
-        //            GL_RGB,
-        //            GL_UNSIGNED_BYTE,
-        //            data
-        //        );
-        //        //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-        //        //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        //        glGetError();
-        //        stbi_image_free(data);
-        //    }
-        //    else
-        //    {
-        //        std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-        //        stbi_image_free(data);
-        //    }
-        //}
         
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -457,16 +439,24 @@ int main(int argc, char** argv)
         renderScene(shadowMappingDepthShader);
 
         currentMoveTank += 0.0005;
+        currentRotatePropeller += 0.005f;
+        propeller.setRotation(propeller.getRotation() + currentRotatePropeller);
 
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
+        glm::vec3 helicopterScale = glm::vec3(1.5f);
+        glm::vec3 propellerScale = glm::vec3(1.5f);
 
         renderModel(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
-        isVehicleMoving = true;
-        /*for (auto& tankPosition : tanksPositions)
+
+        renderModel(shadowMappingDepthShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
+        
+        renderModel(shadowMappingDepthShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
+
+        for (auto& tankPosition : tanksPositions)
         {
-            renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
-        }*/
+            renderModel(shadowMappingDepthShader, tankModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
+        }
 
         float mountainRotation = 0.0f;
         glm::vec3 mountainScale = glm::vec3(0.1f);
@@ -505,10 +495,13 @@ int main(int argc, char** argv)
 
         renderModel(ModelShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
 
-        /*for (auto& tankPosition : tanksPositions)
+        renderModel(ModelShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
+        renderModel(ModelShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
+
+        for (auto& tankPosition : tanksPositions)
         {
-            renderTank(TankModelShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
-        }*/
+            renderModel(ModelShader, tankModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
+        }
 
         for (int i = 0; i < mountainsPositions.size(); i++)
         {
@@ -743,11 +736,21 @@ void processInput(GLFWwindow* window)
             blendFactor -= 0.001;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+    {
+        isHelicopterMoving = false;
+        isTankMoving = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+    {
+        isTankMoving = false;
+        isHelicopterMoving = true;
+    }
 
 
 
     //tank Movement
-    if(isVehicleMoving)
+    if(isTankMoving)
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             tankVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
@@ -758,6 +761,32 @@ void processInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
     }
+
+    if (isHelicopterMoving)
+    {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+            propeller.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+            propeller.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
+            propeller.ProcessKeyboard(V_LEFT, (float)deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+            propeller.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+        }
+    }
+
+
 
     if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
         pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
