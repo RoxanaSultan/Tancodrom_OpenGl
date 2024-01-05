@@ -16,9 +16,7 @@ enum ECameraMovementType
     LEFT,
     RIGHT,
     UP,
-    DOWN,
-    ROTATE_LEFT,
-    ROTATE_RIGHT
+    DOWN
 };
 
 class Camera

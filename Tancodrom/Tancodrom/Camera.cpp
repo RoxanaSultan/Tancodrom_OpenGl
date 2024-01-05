@@ -103,16 +103,6 @@ void Camera::ProcessKeyboard(ECameraMovementType direction, float deltaTime)
         case ECameraMovementType::DOWN:
             position -= up * velocity;
             break;
-        case ECameraMovementType::ROTATE_LEFT:
-            yaw -= 12.5f * velocity;
-            position += right * velocity;
-            UpdateCameraVectors();
-            break;
-        case ECameraMovementType::ROTATE_RIGHT:
-            yaw += 12.5f * velocity;
-            position -= right * velocity;
-            UpdateCameraVectors();
-            break;
     }
 }
 

@@ -36,7 +36,6 @@ bool isDayTime = false;
 Camera* pCamera = nullptr;
 bool isTankMoving = false;
 bool isHelicopterMoving = false;
-bool thirdPersonView = true;
 bool freeCameraView = true;
 
 MoveableObject* currentObject;
@@ -91,12 +90,10 @@ void renderScene(const Shader& shader);
 void renderFloor();
 void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale);
 
-// timing
 double deltaTime = 0.0f; // time between current frame and last frame
 double lastFrame = 0.0f;
 
 float skyboxVertices[] = {
-    // positions          
     -1.0f,  -1.0f, 1.0f,
     1.0f, -1.0f, 1.0f,
      1.0f, -1.0f, -1.0f,
@@ -137,14 +134,14 @@ std::vector<glm::vec3> tanksPositions =
 
 std::vector<glm::vec3> helicoptersBodyPositions =
 {
-    glm::vec3(-8.0f, 5.0f, -10.0f),
-    glm::vec3(8.0f, 5.0f, -10.0f)
+    glm::vec3(-18.0f, 5.0f, -10.0f),
+    glm::vec3(18.0f, 5.0f, -10.0f)
 };
 
 std::vector<glm::vec3> helicoptersPropellerPositions =
 {
-     glm::vec3(-8.0f, 6.0f, -10.0f),
-    glm::vec3(8.0f, 6.0f, -10.0f)
+    glm::vec3(-18.0f, 6.0f, -10.0f),
+    glm::vec3(18.0f, 6.0f, -10.0f)
 };
 
 std::string tankFilePath = "tank.obj";
@@ -214,12 +211,12 @@ std::vector<std::string> facesDay
 std::vector<std::string>facesNight
 {
 
-      "skybox_images_night\\skybox_night_front.jpg",
-      "skybox_images_night\\skybox_night_back.jpg",
-      "skybox_images_night\\skybox_night_left.jpg",
-      "skybox_images_night\\skybox_night_right.jpg",
-      "skybox_images_night\\skybox_night_top.jpg",
-      "skybox_images_night\\skybox_night_bottom.jpg"
+    "skybox_images_night\\skybox_night_front.jpg",
+    "skybox_images_night\\skybox_night_back.jpg",
+    "skybox_images_night\\skybox_night_left.jpg",
+    "skybox_images_night\\skybox_night_right.jpg",
+    "skybox_images_night\\skybox_night_top.jpg",
+    "skybox_images_night\\skybox_night_bottom.jpg"
 };
 
 float blendFactor = 0;
@@ -287,6 +284,7 @@ int main(int argc, char** argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
     // attach depth texture as FBO's depth buffer
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -428,7 +426,6 @@ int main(int argc, char** argv)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // 1. render depth of scene to texture (from light's perspective)
         glm::mat4 lightProjection, lightView;
         glm::mat4 lightSpaceMatrix;
 
@@ -482,12 +479,12 @@ int main(int argc, char** argv)
 
         for (auto& helicopterBody : helicoptersBodyPositions)
         {
-            renderModel(shadowMappingDepthShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation, helicopterScale);
+            renderModel(shadowMappingDepthShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation, helicopterScale);
         }
 
         for (auto& helicopterPropeller : helicoptersPropellerPositions)
         {
-            renderModel(shadowMappingDepthShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation + currentRotatePropeller, propellerScale);
+            renderModel(shadowMappingDepthShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation + currentRotatePropeller, propellerScale);
         }
 
         float mountainRotation = 0.0f;
@@ -540,12 +537,12 @@ int main(int argc, char** argv)
 
         for (auto& helicopterBody : helicoptersBodyPositions)
         {
-            renderModel(ModelShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation, helicopterScale);
+            renderModel(ModelShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation, helicopterScale);
         }
 
         for (auto& helicopterPropeller : helicoptersPropellerPositions)
         {
-            renderModel(ModelShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation + currentRotatePropeller, propellerScale);
+            renderModel(ModelShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation + currentRotatePropeller, propellerScale);
         }
 
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
@@ -658,7 +655,6 @@ void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, 
     ourShader.SetMat4("view", viewMatrix);
     ourShader.SetMat4("projection", projectionMatrix);
 
-    // Draw the model
     ourModel.Draw(ourShader);
 }
 
@@ -684,7 +680,7 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
     {
-        pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
+        pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 12.5f));
         freeCameraView = false;
         isTankMoving = false;
         isHelicopterMoving = true;
@@ -697,18 +693,9 @@ void processInput(GLFWwindow* window)
             pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
 
         if (isHelicopterMoving)
-            pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
-        thirdPersonView = true;
+            pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 12.5f));
     }
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-    {
-        if (isTankMoving)
-            pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
-
-        if (isHelicopterMoving)
-            pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
-        thirdPersonView = false;
-    }
+    
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
     {
         freeCameraView = true;
@@ -725,22 +712,18 @@ void processInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
-            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
-            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
-            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
-            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         }
     }
 
@@ -750,25 +733,21 @@ void processInput(GLFWwindow* window)
         {
             helicopterVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
             propeller.ProcessKeyboard(V_FORWARD, (float)deltaTime);
-            pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
             propeller.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
-            pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
             propeller.ProcessKeyboard(V_LEFT, (float)deltaTime);
-            pCamera->ProcessKeyboard(ROTATE_LEFT, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
             propeller.ProcessKeyboard(V_RIGHT, (float)deltaTime);
-            pCamera->ProcessKeyboard(ROTATE_RIGHT, (float)deltaTime);
         }
     }
 
@@ -795,12 +774,8 @@ void processInput(GLFWwindow* window)
     }
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
     pCamera->Reshape(width, height);
 }
 
