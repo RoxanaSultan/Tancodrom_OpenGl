@@ -395,7 +395,7 @@ int main(int argc, char** argv)
 
     helicopterModel = Model(strExePath + '\\' + helicopterPath);
     helicopterVehicle = MoveableObject(helicopterModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 5.0f, 0.0f));
-    helicopterVehicle.setRotation(90.0f);
+    helicopterVehicle.SetRotation(90.0f);
 
     propellerModel = Model(strExePath + '\\' + propellerPath);
     propeller = MoveableObject(propellerModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 6.0f, 0.0f));
@@ -461,7 +461,7 @@ int main(int argc, char** argv)
 
         currentMoveTank += 0.0005;
         currentRotatePropeller += 10.0f;
-        propeller.setRotation(propeller.getRotation() + currentRotatePropeller);
+        propeller.SetRotation(propeller.GetRotation() + currentRotatePropeller);
 
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
@@ -469,11 +469,11 @@ int main(int argc, char** argv)
         float helicopterRotation = 90.0f;
         glm::vec3 propellerScale = glm::vec3(1.5f);
 
-        renderModel(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+        renderModel(shadowMappingDepthShader, tankVehicle.GetVehicleModel(), tankVehicle.GetPosition(), tankVehicle.GetRotation(), tankScale);
 
-        renderModel(shadowMappingDepthShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
+        renderModel(shadowMappingDepthShader, helicopterVehicle.GetVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.GetRotation(), helicopterScale);
 
-        renderModel(shadowMappingDepthShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
+        renderModel(shadowMappingDepthShader, propeller.GetVehicleModel(), propeller.GetPosition(), propeller.GetRotation(), propellerScale);
 
         for (auto& tankPosition : tanksPositions)
         {
@@ -523,10 +523,10 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
 
-        renderModel(ModelShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+        renderModel(ModelShader, tankVehicle.GetVehicleModel(), tankVehicle.GetPosition(), tankVehicle.GetRotation(), tankScale);
 
-        renderModel(ModelShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
-        renderModel(ModelShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
+        renderModel(ModelShader, helicopterVehicle.GetVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.GetRotation(), helicopterScale);
+        renderModel(ModelShader, propeller.GetVehicleModel(), propeller.GetPosition(), propeller.GetRotation(), propellerScale);
 
         for (auto& tankPosition : tanksPositions)
         {
@@ -685,7 +685,7 @@ void processInput(GLFWwindow* window)
         freeCameraView = false;
         isHelicopterMoving = false;
         isTankMoving = true;
-        pCamera->freeCamera = false;
+        pCamera->SetFreeCamera(false);
         currentObject = &tankVehicle;
     }
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
@@ -694,7 +694,7 @@ void processInput(GLFWwindow* window)
         freeCameraView = false;
         isTankMoving = false;
         isHelicopterMoving = true;
-        pCamera->freeCamera = false;
+        pCamera->SetFreeCamera(false);
         currentObject = &helicopterVehicle;
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
@@ -721,7 +721,7 @@ void processInput(GLFWwindow* window)
         pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
         isTankMoving = false;
         isHelicopterMoving = false;
-        pCamera->freeCamera = true;
+        pCamera->SetFreeCamera(true);
     }
 
     //tank Movement
