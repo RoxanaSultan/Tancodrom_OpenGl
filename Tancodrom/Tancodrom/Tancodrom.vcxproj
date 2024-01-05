@@ -150,8 +150,8 @@
     <None Include="ShadowMappingDepth.vs" />
     <None Include="skybox.fs" />
     <None Include="skybox.vs" />
-    <None Include="TankModelShader.fs" />
-    <None Include="TankModelShader.vs" />
+    <None Include="ModelShader.fs" />
+    <None Include="ModelShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

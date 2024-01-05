@@ -84,7 +84,7 @@ void processInput(GLFWwindow* window);
 void renderScene(const Shader& shader);
 void renderCube();
 void renderFloor();
-void renderTank(Shader& ourShader, Model& ourTankModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale);
+void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale);
 
 // timing
 double deltaTime = 0.0f;	// time between current frame and last frame
@@ -130,6 +130,7 @@ std::vector<glm::vec3> tanksPositions =
 };
 
 std::string objFilePath = "tank.obj";
+std::string mountainFilePath = "mountain.obj";
 //objl::Loader loader;
 //std::cout << loader.LoadedMeshes[0].MeshName;
 
@@ -137,6 +138,34 @@ std::string objFilePath = "tank.obj";
 Model tankModel;
 
 Vehicle tankVehicle;
+
+std::vector<glm::vec3> mountainsPositions =
+{
+    glm::vec3(-10.5f, -1.55f, 10.0f),
+    glm::vec3(50.0f, -1.55f, -25.0f),
+    glm::vec3(20.0f, -1.55f, 20.0f),
+    glm::vec3(-35.0f, -1.55f, -15.0f),
+    glm::vec3(-25.0f, -1.55f, -30.0f),
+    glm::vec3(-50.0f, -1.55f, -35.0f),
+    //far
+    glm::vec3(-30.0f, -1.55f, -150.0f),
+    glm::vec3(-15.0f, -1.55f, -145.0f),
+    glm::vec3(15.0f, -1.55f, -155.0f)
+};
+
+std::vector<glm::vec3> mountainsScales =
+{
+    glm::vec3(0.05f),
+    glm::vec3(0.8f),
+    glm::vec3(0.05f),
+    glm::vec3(0.1f),
+    glm::vec3(0.1f),
+    glm::vec3(0.6f),
+    //far
+    glm::vec3(0.6f),
+    glm::vec3(0.8f),
+    glm::vec3(0.7f)
+};
 
 int main(int argc, char** argv)
 {
@@ -177,7 +206,7 @@ int main(int argc, char** argv)
     // -------------------------
     Shader shadowMappingShader("ShadowMapping.vs", "ShadowMapping.fs");
     Shader shadowMappingDepthShader("ShadowMappingDepth.vs", "ShadowMappingDepth.fs");
-    Shader TankModelShader("TankModelShader.vs", "TankModelShader.fs");
+    Shader ModelShader("ModelShader.vs", "ModelShader.fs");
     Shader skyboxShader("skybox.vs", "skybox.fs");
 
     // load textures
@@ -292,6 +321,7 @@ int main(int argc, char** argv)
     tankModel = Model(strExePath + '\\' + objFilePath);
     tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
+    Model mountainModel(strExePath + '\\' + mountainFilePath);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -353,12 +383,20 @@ int main(int argc, char** argv)
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
 
-        renderTank(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+        renderModel(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
         isVehicleMoving = true;
         /*for (auto& tankPosition : tanksPositions)
         {
             renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
         }*/
+
+        float mountainRotation = 0.0f;
+        glm::vec3 mountainScale = glm::vec3(0.1f);
+
+        for (int i = 0; i < mountainsPositions.size(); i++)
+        {
+            renderModel(shadowMappingDepthShader, mountainModel, mountainsPositions[i] - glm::vec3(0.0f, 0.0f, 0.0f), mountainRotation, mountainsScales[i]);
+        }
 
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -387,21 +425,26 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
 
-        renderTank(TankModelShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+        renderModel(ModelShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
 
         /*for (auto& tankPosition : tanksPositions)
         {
             renderTank(TankModelShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
         }*/
 
+        for (int i = 0; i < mountainsPositions.size(); i++)
+        {
+            renderModel(ModelShader, mountainModel, mountainsPositions[i] - glm::vec3(0.0f, 0.0f, 0.0f), mountainRotation, mountainsScales[i]);
+        }
+
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
         glm::vec3 lightDir = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f)); // Example direction
         glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f); // Example color (rust)
 
-        TankModelShader.Use();
-        TankModelShader.SetVec3("lightColor", lightColor);
-        TankModelShader.SetVec3("lightDir", lightDir);
-        TankModelShader.SetVec3("objectColor", objectColor);
+        ModelShader.Use();
+        ModelShader.SetVec3("lightColor", lightColor);
+        ModelShader.SetVec3("lightDir", lightDir);
+        ModelShader.SetVec3("objectColor", objectColor);
 
         glDepthFunc(GL_LEQUAL);
         glDepthMask(GL_FALSE);
@@ -504,20 +547,20 @@ void renderFloor()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-unsigned int tankVAO = 0;
-unsigned int tankVBO = 0;
-unsigned int tankEBO;
-void renderTank(Shader& ourShader, Model& ourTankModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale) {
+unsigned int modelVAO = 0;
+unsigned int modelVBO = 0;
+unsigned int modelEBO;
+void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale) {
     // Activate the shader program
     ourShader.Use();
 
     // Create transformation matrices
     glm::mat4 model = glm::mat4(1.0f); // Start with the identity matrix
-    model = glm::translate(model, position); // Move the tank to the specified position
-    model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the tank
+    model = glm::translate(model, position); // Move the model to the specified position
+    model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the model
     model = glm::scale(model, scale); // Scale the tank
 
-    glm::mat4 viewMatrix = pCamera->GetViewMatrix(); // Assuming you have a camera class
+    glm::mat4 viewMatrix = pCamera->GetViewMatrix();
     glm::mat4 projectionMatrix = pCamera->GetProjectionMatrix();
 
 
@@ -526,8 +569,8 @@ void renderTank(Shader& ourShader, Model& ourTankModel, const glm::vec3& positio
     ourShader.SetMat4("view", viewMatrix);
     ourShader.SetMat4("projection", projectionMatrix);
 
-    // Draw the tank model
-    ourTankModel.Draw(ourShader);
+    // Draw the model
+    ourModel.Draw(ourShader);
 }
 
 unsigned int cubeVAO = 0;
