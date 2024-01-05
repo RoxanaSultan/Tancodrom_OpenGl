@@ -120,6 +120,7 @@ unsigned int skyboxIndices[] =
 };
 
 double currentMoveTank = 0.0f;
+double currentRotatePropeller = 0.0f;
 
 std::vector<glm::vec3> tanksPositions =
 {
@@ -132,6 +133,8 @@ std::vector<glm::vec3> tanksPositions =
 
 std::string objFilePath = "tank.obj";
 std::string mountainFilePath = "mountain.obj";
+std::string helicopterPath = "body.obj";
+std::string propellerPath = "propeller.obj";
 //objl::Loader loader;
 //std::cout << loader.LoadedMeshes[0].MeshName;
 
@@ -368,7 +371,12 @@ int main(int argc, char** argv)
     tankModel = Model(strExePath + '\\' + objFilePath);
     tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
+    helicopterModel = Model(strExePath + '\\' + helicopterPath);
+    helicopterVehicle = MoveableObject(helicopterModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 5.0f, 0.0f));
+    helicopterVehicle.setRotation(90.0f);
     
+    propellerModel = Model(strExePath + '\\' + propellerPath);
+    propeller = MoveableObject(propellerModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 6.0f, 0.0f));
 
     Model mountainModel(strExePath + '\\' + mountainFilePath);
 
@@ -429,11 +437,20 @@ int main(int argc, char** argv)
         renderScene(shadowMappingDepthShader);
 
         currentMoveTank += 0.0005;
+        currentRotatePropeller += 0.005f;
+        propeller.setRotation(propeller.getRotation() + currentRotatePropeller);
 
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
+        glm::vec3 helicopterScale = glm::vec3(1.5f);
+        glm::vec3 propellerScale = glm::vec3(1.5f);
 
         renderModel(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+
+        renderModel(shadowMappingDepthShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
+        
+        renderModel(shadowMappingDepthShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
+
         isVehicleMoving = true;
         /*for (auto& tankPosition : tanksPositions)
         {
@@ -476,6 +493,9 @@ int main(int argc, char** argv)
         renderScene(shadowMappingShader);
 
         renderModel(ModelShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+
+        renderModel(ModelShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
+        renderModel(ModelShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
 
         /*for (auto& tankPosition : tanksPositions)
         {

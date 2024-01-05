@@ -45,6 +45,7 @@ public:
     Model& getVehicleModel();
 
     float getRotation();
+    void setRotation(float newRotation);
 
 private:
     void UpdateObjectVectors();

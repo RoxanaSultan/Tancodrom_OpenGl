@@ -91,6 +91,11 @@ float MoveableObject::getRotation()
     return rotation;
 }
 
+void MoveableObject::setRotation(float newRotation)
+{
+    rotation = newRotation;
+}
+
 void MoveableObject::UpdateObjectVectors()
 {
     // Calculate the new forward vector
