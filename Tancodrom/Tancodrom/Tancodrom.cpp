@@ -189,7 +189,8 @@ std::vector<std::string>facesNight
       "skybox_images_night\\skybox_night.jpg"
 };
 
-std::vector<std::string> faces = facesDay;
+//std::vector<std::string> faces = facesDay;
+float blendFactor = 0;
 
 int main(int argc, char** argv)
 {
@@ -301,78 +302,16 @@ int main(int argc, char** argv)
     glGenTextures(1, &cubemapTexture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 
-    glGenTextures(1, &cubemapTextureNight);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
-
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
      
-    //int width, height, nrChannels;
-    //if (isDayTime)
-    //{
-    //    for (unsigned int i = 0; i < faces.size(); i++)
-    //    {
-    //        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-    //        if (data)
-    //        {
-    //            stbi_set_flip_vertically_on_load(false);
-    //            glTexImage2D
-    //            (
-    //                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-    //                0,
-    //                GL_RGB,
-    //                width,
-    //                height,
-    //                0,
-    //                GL_RGB,
-    //                GL_UNSIGNED_BYTE,
-    //                data
-    //            );
-    //            //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-    //            //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    //            glGetError();
-    //            stbi_image_free(data);
-    //        }
-    //        else
-    //        {
-    //            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-    //            stbi_image_free(data);
-    //        }
-    //    }
-    //}else
-    //{
-    //    //Incarcare texturi skybox de noapte
-    //    for (unsigned int i = 0; i < facesNight.size(); i++) {
-    //        unsigned char* data = stbi_load(facesNight[i].c_str(), &width, &height, &nrChannels, 0);
-    //        if (data) {
-    //            stbi_set_flip_vertically_on_load(false);
-    //            glTexImage2D(
-    //                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-    //                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-    //            );
-    //            glGetError();
-    //            stbi_image_free(data);
-    //        }
-    //        else {
-    //            std::cout << "Cubemap texture failed to load at path: " << facesNight[i] << std::endl;
-    //        }
-    //    }
-    //}
-
-    tankModel = Model(strExePath + '\\' + objFilePath);
-    tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
-
-    Model mountainModel(strExePath + '\\' + mountainFilePath);
-
-    while (!glfwWindowShouldClose(window))
-    {
         int width, height, nrChannels;
-        for (unsigned int i = 0; i < faces.size(); i++)
+        for (unsigned int i = 0; i < facesDay.size(); i++)
         {
-            unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+            unsigned char* data = stbi_load(facesDay[i].c_str(), &width, &height, &nrChannels, 0);
             if (data)
             {
                 stbi_set_flip_vertically_on_load(false);
@@ -395,14 +334,78 @@ int main(int argc, char** argv)
             }
             else
             {
-                std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+                std::cout << "Cubemap texture failed to load at path: " << facesDay[i] << std::endl;
                 stbi_image_free(data);
             }
         }
+
+        glGenTextures(1, &cubemapTextureNight);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        //Incarcare texturi skybox de noapte
+        for (unsigned int i = 0; i < facesNight.size(); i++) {
+            unsigned char* data = stbi_load(facesNight[i].c_str(), &width, &height, &nrChannels, 0);
+            if (data) {
+                stbi_set_flip_vertically_on_load(false);
+                glTexImage2D(
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+                );
+                glGetError();
+                stbi_image_free(data);
+            }
+            else {
+                std::cout << "Cubemap texture failed to load at path: " << facesNight[i] << std::endl;
+            }
+        }
+
+    tankModel = Model(strExePath + '\\' + objFilePath);
+    tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
+
+    Model mountainModel(strExePath + '\\' + mountainFilePath);
+
+    while (!glfwWindowShouldClose(window))
+    {
+        //int width, height, nrChannels;
+        //for (unsigned int i = 0; i < faces.size(); i++)
+        //{
+        //    unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        //    if (data)
+        //    {
+        //        stbi_set_flip_vertically_on_load(false);
+        //        glTexImage2D
+        //        (
+        //            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+        //            0,
+        //            GL_RGB,
+        //            width,
+        //            height,
+        //            0,
+        //            GL_RGB,
+        //            GL_UNSIGNED_BYTE,
+        //            data
+        //        );
+        //        //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+        //        //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        //        glGetError();
+        //        stbi_image_free(data);
+        //    }
+        //    else
+        //    {
+        //        std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+        //        stbi_image_free(data);
+        //    }
+        //}
         
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
@@ -523,7 +526,10 @@ int main(int argc, char** argv)
         glDepthFunc(GL_LEQUAL);
         glDepthMask(GL_FALSE);
         skyboxShader.Use();
-        //glm::mat4 viewSB = glm::mat4(glm::mat3(pCamera->GetViewMatrix()));
+
+        skyboxShader.SetInt("skybox1", 0); // Texture unit 0
+        skyboxShader.SetInt("skybox2", 1); // Texture unit 1
+        skyboxShader.SetFloat("blendFactor", blendFactor); // Set your blend factor here
 
         glm::mat4 viewSB = glm::mat4(glm::mat3(pCamera->GetViewMatrix())); // Remove translation component
         //glm::mat4 projectionSB = glm::perspective(glm::radians(pCamera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -531,21 +537,14 @@ int main(int argc, char** argv)
         glm::mat4 projectionSB = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         skyboxShader.SetMat4("view", viewSB);
         skyboxShader.SetMat4("projection", projectionSB);
-        glBindVertexArray(skyboxVAO);
+        
         glActiveTexture(GL_TEXTURE0);
-        //Choose the texture day or night
-        if (isDayTime)
-        {
-            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
 
-        }
-        else
-        {
-            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);;
-        }
-        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glBindVertexArray(skyboxVAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        //glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         //glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
@@ -736,9 +735,11 @@ void processInput(GLFWwindow* window)
     
     
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-            faces = facesNight;
+        if(blendFactor < 1)
+            blendFactor += 0.001;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-            faces = facesDay;
+        if (blendFactor > 0)
+            blendFactor -= 0.001;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
