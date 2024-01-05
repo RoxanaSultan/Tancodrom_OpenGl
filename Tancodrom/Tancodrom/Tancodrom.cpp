@@ -29,8 +29,8 @@
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "OpenGL32.lib")
 
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 900;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 bool isDayTime = false;
 
 
@@ -181,8 +181,8 @@ std::vector<std::string> facesDay
     "skybox_images\\skybox_left.jpg",
     "skybox_images\\skybox_top.jpg",
     "skybox_images\\skybox_bottom.jpg",
-    "skybox_images\\skybox_front.jpg",
-    "skybox_images\\skybox_back.jpg"
+    "skybox_images\\skybox_back.jpg",
+    "skybox_images\\skybox_front.jpg"
 };
 
 std::vector<std::string>facesNight
