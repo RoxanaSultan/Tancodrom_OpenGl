@@ -141,6 +141,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Tancodrom.cpp" />
+    <ClCompile Include="Vehicle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ShadowMapping.fs" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Vehicle.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="skybox_images\skybox_back.jpg" />

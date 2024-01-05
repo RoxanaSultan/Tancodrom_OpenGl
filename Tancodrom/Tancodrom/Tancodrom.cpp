@@ -22,6 +22,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Model.h"
+#include "Vehicle.h"
 //#include "OBJ_Loader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
@@ -282,7 +283,9 @@ int main(int argc, char** argv)
         }
     }
 
-    Model myModel(strExePath + '\\' + objFilePath);
+    Model tankModel(strExePath + '\\' + objFilePath);
+
+    Vehicle tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -344,10 +347,12 @@ int main(int argc, char** argv)
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
 
-        for (auto& tankPosition : tanksPositions)
+        renderTank(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+
+        /*for (auto& tankPosition : tanksPositions)
         {
             renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
-        }
+        }*/
 
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -376,10 +381,12 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
         renderScene(shadowMappingShader);
 
-        for (auto& tankPosition : tanksPositions)
+        renderTank(TankModelShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
+
+        /*for (auto& tankPosition : tanksPositions)
         {
             renderTank(TankModelShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
-        }
+        }*/
 
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
         glm::vec3 lightDir = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f)); // Example direction

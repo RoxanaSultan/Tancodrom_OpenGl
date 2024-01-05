@@ -17,6 +17,8 @@ public:
     std::vector<Mesh> meshes;
     std::string directory;
 
+    Model() = default;
+
     Model(std::string path)
     {
         loadModel(path);
