@@ -35,7 +35,8 @@ bool isDayTime = false;
 
 
 Camera* pCamera = nullptr;
-bool isVehicleMoving = false;
+bool isTankMoving = false;
+bool isHelicopterMoving = false;
 
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
@@ -451,7 +452,6 @@ int main(int argc, char** argv)
         
         renderModel(shadowMappingDepthShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
 
-        isVehicleMoving = true;
         /*for (auto& tankPosition : tanksPositions)
         {
             renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
@@ -735,11 +735,21 @@ void processInput(GLFWwindow* window)
             blendFactor -= 0.001;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+    {
+        isHelicopterMoving = false;
+        isTankMoving = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+    {
+        isTankMoving = false;
+        isHelicopterMoving = true;
+    }
 
 
 
     //tank Movement
-    if(isVehicleMoving)
+    if(isTankMoving)
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             tankVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
@@ -750,6 +760,32 @@ void processInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
     }
+
+    if (isHelicopterMoving)
+    {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+            propeller.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+            propeller.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
+            propeller.ProcessKeyboard(V_LEFT, (float)deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            helicopterVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+            propeller.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+        }
+    }
+
+
 
     if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
         pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
