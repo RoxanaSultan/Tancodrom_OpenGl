@@ -29,7 +29,7 @@
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "OpenGL32.lib")
 
-const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1080;
 bool isDayTime = false;
 
@@ -134,6 +134,18 @@ std::vector<glm::vec3> tanksPositions =
     glm::vec3(10.0f, -1.55f, 20.0f),
     glm::vec3(-10.0f, -1.55f, 20.0f),
     glm::vec3(0.0f, -1.55f, 20.0f)
+};
+
+std::vector<glm::vec3> helicoptersBodyPositions =
+{
+    glm::vec3(-8.0f, 5.0f, -10.0f),
+    glm::vec3(8.0f, 5.0f, -10.0f)
+};
+
+std::vector<glm::vec3> helicoptersPropellerPositions =
+{
+     glm::vec3(-8.0f, 6.0f, -10.0f),
+    glm::vec3(8.0f, 6.0f, -10.0f)
 };
 
 std::string tankFilePath = "tank.obj";
@@ -460,12 +472,13 @@ int main(int argc, char** argv)
         renderScene(shadowMappingDepthShader);
 
         currentMoveTank += 0.0005;
-        currentRotatePropeller += 0.005f;
+        currentRotatePropeller += 10.0f;
         propeller.setRotation(propeller.getRotation() + currentRotatePropeller);
 
         float tankRotation = 0.0f;
         glm::vec3 tankScale = glm::vec3(0.5f);
         glm::vec3 helicopterScale = glm::vec3(1.5f);
+        float helicopterRotation = 90.0f;
         glm::vec3 propellerScale = glm::vec3(1.5f);
 
         renderModel(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
@@ -477,6 +490,16 @@ int main(int argc, char** argv)
         for (auto& tankPosition : tanksPositions)
         {
             renderModel(shadowMappingDepthShader, tankModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
+        }
+
+        for (auto& helicopterBody : helicoptersBodyPositions)
+        {
+            renderModel(shadowMappingDepthShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation, helicopterScale);
+        }
+
+        for (auto& helicopterPropeller : helicoptersPropellerPositions)
+        {
+            renderModel(shadowMappingDepthShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation + currentRotatePropeller, propellerScale);
         }
 
         float mountainRotation = 0.0f;
@@ -527,6 +550,16 @@ int main(int argc, char** argv)
         for (int i = 0; i < mountainsPositions.size(); i++)
         {
             renderModel(ModelShader, mountainModel, mountainsPositions[i] - glm::vec3(0.0f, 0.0f, 0.0f), mountainRotation, mountainsScales[i]);
+        }
+
+        for (auto& helicopterBody : helicoptersBodyPositions)
+        {
+            renderModel(ModelShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation, helicopterScale);
+        }
+
+        for (auto& helicopterPropeller : helicoptersPropellerPositions)
+        {
+            renderModel(ModelShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 2), helicopterRotation + currentRotatePropeller, propellerScale);
         }
 
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
