@@ -30,10 +30,10 @@ private:
     const float YAW = -90.0f;
     const float PITCH = 0.0f;
     const float FOV = 45.0f;
+    bool freeCamera;
     glm::vec3 startPosition;
 
 public:
-    bool freeCamera;
 
     Camera(const int width, const int height, const glm::vec3& position);
 
@@ -58,6 +58,10 @@ public:
     void ProcessMouseScroll(float yOffset);
 
     void SetForwardVector(glm::vec3 forward);
+
+    void SetFreeCamera(bool freeCamera);
+
+    bool GetFreeCamera();
 
 private:
     void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);

@@ -162,10 +162,6 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPi
     yaw += xOffset;
     pitch += yOffset;
 
-    //std::cout << "yaw = " << yaw << std::endl;
-    //std::cout << "pitch = " << pitch << std::endl;
-
-    // Avem grija sa nu ne dam peste cap
     if (constrainPitch)
     {
         if (pitch > 89.0f)
@@ -174,8 +170,12 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPi
             pitch = -89.0f;
     }
 
-    // Se modifica vectorii camerei pe baza unghiurilor Euler
     UpdateCameraVectors();
+}
+
+void Camera::SetFreeCamera(bool freeCamera)
+{
+    this->freeCamera = freeCamera;
 }
 
 void Camera::UpdateCameraVectors()
@@ -188,4 +188,9 @@ void Camera::UpdateCameraVectors()
     // Also re-calculate the Right and Up vector
     right = glm::normalize(glm::cross(forward, worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     up = glm::normalize(glm::cross(right, forward));
+}
+
+bool Camera::GetFreeCamera()
+{
+    return this->freeCamera;
 }

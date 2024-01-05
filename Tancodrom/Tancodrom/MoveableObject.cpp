@@ -26,7 +26,7 @@ void MoveableObject::Set(const int width, const int height, const glm::vec3 & po
     this->zNear = zNEAR;
     this->zFar = zFAR;
 
-    this->worldUp = glm::vec3(0, 1, 0);//???
+    this->worldUp = glm::vec3(0, 1, 0);
     this->position = position;
 
     lastX = width / 2.0f;
@@ -81,17 +81,17 @@ void MoveableObject::ProcessKeyboard(MovementType direction, float deltaTime)
     }
 }
 
-Model& MoveableObject::getVehicleModel()
+Model& MoveableObject::GetVehicleModel()
 {
     return objectModel;
 }
 
-float MoveableObject::getRotation()
+float MoveableObject::GetRotation()
 {
     return rotation;
 }
 
-void MoveableObject::setRotation(float newRotation)
+void MoveableObject::SetRotation(float newRotation)
 {
     rotation = newRotation;
 }

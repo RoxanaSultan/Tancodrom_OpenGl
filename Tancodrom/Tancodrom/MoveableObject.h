@@ -36,16 +36,15 @@ public:
 
     const glm::vec3 GetPosition() const;
 
-    //const glm::mat4 GetViewMatrix() const;
-
     const glm::mat4 GetProjectionMatrix() const;
 
     void ProcessKeyboard(MovementType direction, float deltaTime);
 
-    Model& getVehicleModel();
+    Model& GetVehicleModel();
 
-    float getRotation();
-    void setRotation(float newRotation);
+    float GetRotation();
+
+    void SetRotation(float newRotation);
 
     glm::vec3 GetForward();
 
