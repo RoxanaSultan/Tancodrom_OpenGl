@@ -62,18 +62,22 @@ void Vehicle::ProcessKeyboard(VehicleMovementType direction, float deltaTime)
     float velocity = (float)(vehicleSpeedFactor * deltaTime);
     switch (direction)
     {
-        case VehicleMovementType::V_FORWARD:
-            position += forward * velocity;
-            break;
-        case VehicleMovementType::V_BACKWARD:
-            position -= forward * velocity;
-            break;
-        case VehicleMovementType::V_LEFT:
-            rotation += 10.5f * velocity;
-            break;
-        case VehicleMovementType::V_RIGHT:
-            rotation -= 10.5f * velocity;
-            break;
+    case VehicleMovementType::V_FORWARD:
+        position += forward * velocity;
+        break;
+    case VehicleMovementType::V_BACKWARD:
+        position -= forward * velocity;
+        break;
+    case VehicleMovementType::V_LEFT:
+        rotation += 10.5f * velocity;
+        yaw -= 10.5f * velocity;
+        UpdateVehicleVectors();
+        break;
+    case VehicleMovementType::V_RIGHT:
+        rotation -= 10.5f * velocity;
+        yaw += 10.5f * velocity;
+        UpdateVehicleVectors();
+        break;
     }
 }
 
@@ -93,8 +97,7 @@ void Vehicle::UpdateVehicleVectors()
     this->forward.x = cos(glm::radians(yaw));
     this->forward.z = sin(glm::radians(yaw));
     this->forward = glm::normalize(this->forward);
-    // Also re-calculate the Right and Up vector
-
+    
     //See if right is needed
 
     right = glm::normalize(glm::cross(forward, worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

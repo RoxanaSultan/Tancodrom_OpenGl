@@ -63,7 +63,7 @@ protected:
     glm::vec3 position;
     glm::vec3 forward;
     glm::vec3 right;
-    float rotation;
+    float rotation = 1.0f;
     glm::vec3 worldUp;
 
     // Euler Angles
