@@ -186,12 +186,12 @@ std::vector<std::string> facesDay
 std::vector<std::string>facesNight
 {
 
-      "skybox_images_night\\skybox_night_right.jpg",
-      "skybox_images_night\\skybox_night_left.jpg",
-      "skybox_images_night\\skybox_night_top.jpg",
-      "skybox_images_night\\skybox_night_bottom.jpg",
       "skybox_images_night\\skybox_night_front.jpg",
-      "skybox_images_night\\skybox_night_back.jpg"
+      "skybox_images_night\\skybox_night_back.jpg",
+      "skybox_images_night\\skybox_night_left.jpg",
+      "skybox_images_night\\skybox_night_right.jpg",
+      "skybox_images_night\\skybox_night_top.jpg",
+      "skybox_images_night\\skybox_night_bottom.jpg"
 };
 
 //std::vector<std::string> faces = facesDay;
