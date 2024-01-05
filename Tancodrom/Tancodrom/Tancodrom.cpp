@@ -157,7 +157,15 @@ std::vector<glm::vec3> mountainsPositions =
     //far
     glm::vec3(-30.0f, -1.55f, -150.0f),
     glm::vec3(-15.0f, -1.55f, -145.0f),
-    glm::vec3(15.0f, -1.55f, -155.0f)
+    glm::vec3(15.0f, -1.55f, -155.0f),
+
+    //far far
+    glm::vec3(70.0f, -1.55f, 200.0f),
+    glm::vec3(-70.0f, -1.55f, 200.0f),
+    glm::vec3(90.0f, -1.55f, 160.0f),
+
+    glm::vec3(160.0f, -1.55f, 100.0f),
+    glm::vec3(-160.0f, -1.55f, 100.0f)
 };
 
 std::vector<glm::vec3> mountainsScales =
@@ -171,7 +179,14 @@ std::vector<glm::vec3> mountainsScales =
     //far
     glm::vec3(0.6f),
     glm::vec3(0.8f),
-    glm::vec3(0.7f)
+    glm::vec3(0.7f),
+    //far far
+    glm::vec3(0.6f),
+    glm::vec3(0.6f),
+    glm::vec3(0.8f),
+
+    glm::vec3(0.4f),
+    glm::vec3(0.4f)
 };
 
 
