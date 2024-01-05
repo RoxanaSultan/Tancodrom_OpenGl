@@ -220,6 +220,7 @@ std::vector<std::string>facesNight
 };
 
 float blendFactor = 0;
+float ambientFactor = 0.9;
 
 int main(int argc, char** argv)
 {
@@ -509,6 +510,7 @@ int main(int argc, char** argv)
         glm::mat4 view = pCamera->GetViewMatrix(currentObject);
         shadowMappingShader.SetMat4("projection", projection);
         shadowMappingShader.SetMat4("view", view);
+        shadowMappingShader.SetFloat("ambientFactor", ambientFactor);
         // set light uniforms
         shadowMappingShader.SetVec3("viewPos", pCamera->GetPosition());
         shadowMappingShader.SetVec3("lightPos", lightPos);
@@ -662,11 +664,15 @@ void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, 
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-        if (blendFactor < 1)
-            blendFactor += 0.001;
+    {
+        blendFactor = std::min(blendFactor + 0.001, 1.0);
+        ambientFactor = std::max(ambientFactor - 0.001, 0.34);
+    }
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-        if (blendFactor > 0)
-            blendFactor -= 0.001;
+    {
+        blendFactor = std::max(blendFactor - 0.001, 0.0);
+        ambientFactor = std::min(ambientFactor + 0.001, 0.9);
+    }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
@@ -686,14 +692,6 @@ void processInput(GLFWwindow* window)
         isHelicopterMoving = true;
         pCamera->SetFreeCamera(false);
         currentObject = &helicopterVehicle;
-    }
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-    {
-        if (isTankMoving)
-            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
-
-        if (isHelicopterMoving)
-            pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 12.5f));
     }
     
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
