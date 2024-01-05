@@ -144,12 +144,6 @@ std::vector<glm::vec3> helicoptersPropellerPositions =
     glm::vec3(18.0f, 6.0f, -10.0f)
 };
 
-std::string tankFilePath = "tank.obj";
-std::string mountainFilePath = "mountain.obj";
-std::string helicopterPath = "body.obj";
-std::string propellerPath = "propeller.obj";
-
-
 Model tankModel, helicopterModel, propellerModel;
 
 MoveableObject tankVehicle, helicopterVehicle, propeller;
@@ -253,6 +247,8 @@ int main(int argc, char** argv)
 
     glewInit();
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 7.0f, 25.0f));
 
     glEnable(GL_DEPTH_TEST);
@@ -266,7 +262,7 @@ int main(int argc, char** argv)
 
     // load textures
     // -------------
-    unsigned int floorTexture = CreateTexture(strExePath + "\\skybox_bottom2.jpg");
+    unsigned int floorTexture = CreateTexture("Assets\\skybox_bottom2.jpg");
 
     // configure depth map FBO
     // -----------------------
@@ -387,20 +383,20 @@ int main(int argc, char** argv)
         }
     }
 
-    tankModel = Model(strExePath + '\\' + tankFilePath);
+    tankModel = Model("Assets\\tank.obj");
     tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
     currentObject = &tankVehicle;
 
-    helicopterModel = Model(strExePath + '\\' + helicopterPath);
+    helicopterModel = Model("Assets\\body.obj");
     helicopterVehicle = MoveableObject(helicopterModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 5.0f, 0.0f));
     helicopterVehicle.SetRotation(90.0f);
 
-    propellerModel = Model(strExePath + '\\' + propellerPath);
+    propellerModel = Model("Assets\\propeller.obj");
     propeller = MoveableObject(propellerModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 6.0f, 0.0f));
 
-    Model mountainModel(strExePath + '\\' + mountainFilePath);
-    Model tankModel(strExePath + '\\' + tankFilePath);
+    Model mountainModel("Assets\\mountain.obj");
+    Model tankModel("Assets\\tank.obj");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -480,12 +476,12 @@ int main(int argc, char** argv)
 
         for (auto& helicopterBody : helicoptersBodyPositions)
         {
-            renderModel(shadowMappingDepthShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation, helicopterScale);
+            renderModel(shadowMappingDepthShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 3), helicopterRotation, helicopterScale);
         }
 
         for (auto& helicopterPropeller : helicoptersPropellerPositions)
         {
-            renderModel(shadowMappingDepthShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation + currentRotatePropeller, propellerScale);
+            renderModel(shadowMappingDepthShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 3), helicopterRotation + currentRotatePropeller, propellerScale);
         }
 
         float mountainRotation = 0.0f;
@@ -539,12 +535,12 @@ int main(int argc, char** argv)
 
         for (auto& helicopterBody : helicoptersBodyPositions)
         {
-            renderModel(ModelShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation, helicopterScale);
+            renderModel(ModelShader, helicopterModel, helicopterBody - glm::vec3(0.0f, 0.0f, currentMoveTank * 3), helicopterRotation, helicopterScale);
         }
 
         for (auto& helicopterPropeller : helicoptersPropellerPositions)
         {
-            renderModel(ModelShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 5), helicopterRotation + currentRotatePropeller, propellerScale);
+            renderModel(ModelShader, propellerModel, helicopterPropeller - glm::vec3(0.0f, 0.0f, currentMoveTank * 3), helicopterRotation + currentRotatePropeller, propellerScale);
         }
 
         glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f); // White light
