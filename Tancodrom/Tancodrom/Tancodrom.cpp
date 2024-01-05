@@ -23,7 +23,6 @@
 #include "Shader.h"
 #include "Model.h"
 #include "MoveableObject.h"
-//#include "OBJ_Loader.h"
 
 #pragma comment (lib, "glfw3dll.lib")
 #pragma comment (lib, "glew32.lib")
@@ -48,7 +47,7 @@ unsigned int CreateTexture(const std::string& strTexturePath)
 
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(strTexturePath.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
@@ -71,7 +70,8 @@ unsigned int CreateTexture(const std::string& strTexturePath)
         // set texture filtering parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    } else
+    }
+    else
     {
         std::cout << "Failed to load texture: " << strTexturePath << std::endl;
     }
@@ -88,12 +88,11 @@ void processInput(GLFWwindow* window);
 
 
 void renderScene(const Shader& shader);
-void renderCube();
 void renderFloor();
 void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale);
 
 // timing
-double deltaTime = 0.0f;	// time between current frame and last frame
+double deltaTime = 0.0f; // time between current frame and last frame
 double lastFrame = 0.0f;
 
 float skyboxVertices[] = {
@@ -152,8 +151,6 @@ std::string tankFilePath = "tank.obj";
 std::string mountainFilePath = "mountain.obj";
 std::string helicopterPath = "body.obj";
 std::string propellerPath = "propeller.obj";
-//objl::Loader loader;
-//std::cout << loader.LoadedMeshes[0].MeshName;
 
 
 Model tankModel, helicopterModel, propellerModel;
@@ -225,7 +222,6 @@ std::vector<std::string>facesNight
       "skybox_images_night\\skybox_night_bottom.jpg"
 };
 
-//std::vector<std::string> faces = facesDay;
 float blendFactor = 0;
 
 int main(int argc, char** argv)
@@ -298,7 +294,6 @@ int main(int argc, char** argv)
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
     // shader configuration
     // --------------------
     shadowMappingShader.Use();
@@ -326,14 +321,9 @@ int main(int argc, char** argv)
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    
-    //unsigned int cubemapTexture = loadCubemap(faces);
     unsigned int cubemapTexture;
-  
+
     unsigned int cubemapTextureNight;
-
-    
-
 
     glGenTextures(1, &cubemapTexture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
@@ -343,62 +333,60 @@ int main(int argc, char** argv)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-     
-        int width, height, nrChannels;
-        for (unsigned int i = 0; i < facesDay.size(); i++)
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < facesDay.size(); i++)
+    {
+        unsigned char* data = stbi_load(facesDay[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
         {
-            unsigned char* data = stbi_load(facesDay[i].c_str(), &width, &height, &nrChannels, 0);
-            if (data)
-            {
-                stbi_set_flip_vertically_on_load(false);
-                glTexImage2D
-                (
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    0,
-                    GL_RGB,
-                    width,
-                    height,
-                    0,
-                    GL_RGB,
-                    GL_UNSIGNED_BYTE,
-                    data
-                );
-                //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-                glGetError();
-                stbi_image_free(data);
-            }
-            else
-            {
-                std::cout << "Cubemap texture failed to load at path: " << facesDay[i] << std::endl;
-                stbi_image_free(data);
-            }
+            stbi_set_flip_vertically_on_load(false);
+            glTexImage2D
+            (
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0,
+                GL_RGB,
+                width,
+                height,
+                0,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                data
+            );
+            glGetError();
+            stbi_image_free(data);
         }
-
-        glGenTextures(1, &cubemapTextureNight);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        //Incarcare texturi skybox de noapte
-        for (unsigned int i = 0; i < facesNight.size(); i++) {
-            unsigned char* data = stbi_load(facesNight[i].c_str(), &width, &height, &nrChannels, 0);
-            if (data) {
-                stbi_set_flip_vertically_on_load(false);
-                glTexImage2D(
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-                );
-                glGetError();
-                stbi_image_free(data);
-            }
-            else {
-                std::cout << "Cubemap texture failed to load at path: " << facesNight[i] << std::endl;
-            }
+        else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << facesDay[i] << std::endl;
+            stbi_image_free(data);
         }
+    }
+
+    glGenTextures(1, &cubemapTextureNight);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    //night skybox
+    for (unsigned int i = 0; i < facesNight.size(); i++) {
+        unsigned char* data = stbi_load(facesNight[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data) {
+            stbi_set_flip_vertically_on_load(false);
+            glTexImage2D(
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+            glGetError();
+            stbi_image_free(data);
+        }
+        else {
+            std::cout << "Cubemap texture failed to load at path: " << facesNight[i] << std::endl;
+        }
+    }
 
     tankModel = Model(strExePath + '\\' + tankFilePath);
     tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
@@ -408,7 +396,7 @@ int main(int argc, char** argv)
     helicopterModel = Model(strExePath + '\\' + helicopterPath);
     helicopterVehicle = MoveableObject(helicopterModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 5.0f, 0.0f));
     helicopterVehicle.setRotation(90.0f);
-    
+
     propellerModel = Model(strExePath + '\\' + propellerPath);
     propeller = MoveableObject(propellerModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 6.0f, 0.0f));
 
@@ -417,7 +405,7 @@ int main(int argc, char** argv)
 
     while (!glfwWindowShouldClose(window))
     {
-        
+
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
@@ -484,7 +472,7 @@ int main(int argc, char** argv)
         renderModel(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
 
         renderModel(shadowMappingDepthShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
-        
+
         renderModel(shadowMappingDepthShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
 
         for (auto& tankPosition : tanksPositions)
@@ -517,8 +505,6 @@ int main(int argc, char** argv)
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-        // 2. render scene as normal using the generated depth/shadow map 
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shadowMappingShader.Use();
@@ -575,17 +561,16 @@ int main(int argc, char** argv)
         glDepthMask(GL_FALSE);
         skyboxShader.Use();
 
-        skyboxShader.SetInt("skybox1", 0); // Texture unit 0
-        skyboxShader.SetInt("skybox2", 1); // Texture unit 1
-        skyboxShader.SetFloat("blendFactor", blendFactor); // Set your blend factor here
+        skyboxShader.SetInt("skybox1", 0);
+        skyboxShader.SetInt("skybox2", 1);
+        skyboxShader.SetFloat("blendFactor", blendFactor);
 
-        glm::mat4 viewSB = glm::mat4(glm::mat3(pCamera->GetViewMatrix(currentObject))); // Remove translation component
-        //glm::mat4 projectionSB = glm::perspective(glm::radians(pCamera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 viewSB = glm::mat4(glm::mat3(pCamera->GetViewMatrix(currentObject))); 
 
         glm::mat4 projectionSB = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         skyboxShader.SetMat4("view", viewSB);
         skyboxShader.SetMat4("projection", projectionSB);
-        
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glActiveTexture(GL_TEXTURE1);
@@ -594,22 +579,8 @@ int main(int argc, char** argv)
         glBindVertexArray(skyboxVAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
-        //glDepthMask(GL_TRUE);
+
         glDepthFunc(GL_LESS);
-
-
-        // Render
-        //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //// Use shader program
-        //TankModelShader.Use();
-        //glm::mat4 tankModelMatrix = glm::mat4(1.0f); // Replace with appropriate transformations
-        //TankModelShader.SetMat4("model", tankModelMatrix);
-        //myMesh.Draw(TankModelShader);
-        //renderScene(TankModelShader);
-
-        
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -636,8 +607,6 @@ void renderScene(const Shader& shader)
     model = glm::translate(model, glm::vec3(0.0f, 1.75f, 0.0));
     model = glm::scale(model, glm::vec3(0.75f));
     shader.SetMat4("model", model);
-    //renderCube();
-
 }
 
 
@@ -648,9 +617,7 @@ void renderFloor()
 
     if (planeVAO == 0)
     {
-        // set up vertex data (and buffer(s)) and configure vertex attributes
         float planeVertices[] = {
-            // positions            // normals         // texcoords
             200.0f, -0.5f,  200.0f,  0.0f, 1.0f, 0.0f,  200.0f,  0.0f,
             -200.0f, -0.5f,  200.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
             -200.0f, -0.5f, -200.0f,  0.0f, 1.0f, 0.0f,   0.0f, 200.0f,
@@ -681,21 +648,18 @@ void renderFloor()
 unsigned int modelVAO = 0;
 unsigned int modelVBO = 0;
 unsigned int modelEBO;
-void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale) {
-    // Activate the shader program
+void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, float rotationAngle, const glm::vec3& scale) 
+{
     ourShader.Use();
 
-    // Create transformation matrices
-    glm::mat4 model = glm::mat4(1.0f); // Start with the identity matrix
-    model = glm::translate(model, position); // Move the model to the specified position
-    model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the model
-    model = glm::scale(model, scale); // Scale the tank
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position); 
+    model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); 
+    model = glm::scale(model, scale); 
 
     glm::mat4 viewMatrix = pCamera->GetViewMatrix(currentObject);
     glm::mat4 projectionMatrix = pCamera->GetProjectionMatrix();
 
-
-    // Pass the transformation matrices to the shader
     ourShader.SetMat4("model", model);
     ourShader.SetMat4("view", viewMatrix);
     ourShader.SetMat4("projection", projectionMatrix);
@@ -704,84 +668,11 @@ void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, 
     ourModel.Draw(ourShader);
 }
 
-unsigned int cubeVAO = 0;
-unsigned int cubeVBO = 0;
-void renderCube()
-{
-    // initialize (if necessary)
-    if (cubeVAO == 0)
-    {
-        float vertices[] = {
-            // back face
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-            1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-            // front face
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-            1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-            1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-            // left face
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            // right face
-            1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-            1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-            1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-            1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-            1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-            1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
-            // bottom face
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-            1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            // top face
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-            1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left      
-        };
-        glGenVertexArrays(1, &cubeVAO);
-        glGenBuffers(1, &cubeVBO);
-        // fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // link vertex attributes
-        glBindVertexArray(cubeVAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-    // render Cube
-    glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-}
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-        if(blendFactor < 1)
+        if (blendFactor < 1)
             blendFactor += 0.001;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
         if (blendFactor > 0)
@@ -790,7 +681,6 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
     {
-        //pCamera->Set(SCR_WIDTH, SCR_HEIGHT, );
         pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         freeCameraView = false;
         isHelicopterMoving = false;
@@ -835,7 +725,7 @@ void processInput(GLFWwindow* window)
     }
 
     //tank Movement
-    if(isTankMoving)
+    if (isTankMoving)
     {
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -847,19 +737,16 @@ void processInput(GLFWwindow* window)
         {
             tankVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
             pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
-            //pCamera->SetForwardVector(tankVehicle.GetForward());
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
             pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
-            //pCamera->SetForwardVector(tankVehicle.GetForward());
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
             pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
-            //pCamera->SetForwardVector(tankVehicle.GetForward());
         }
     }
 
@@ -891,7 +778,7 @@ void processInput(GLFWwindow* window)
         }
     }
 
-    if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
         pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
@@ -925,7 +812,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    if(freeCameraView)
+    if (freeCameraView)
         pCamera->MouseControl((float)xpos, (float)ypos);
 }
 
