@@ -29,7 +29,10 @@ private:
     Model vehicleModel;
 
 public:
+    Vehicle() = default;
     Vehicle(Model model, const int width, const int height, const glm::vec3& position);
+
+    Vehicle& operator=(const Vehicle& othervehicle);
 
     void Set(const int width, const int height, const glm::vec3& position);
 

@@ -7,6 +7,14 @@ Vehicle::Vehicle(Model model, const int width, const int height, const glm::vec3
 	Set(width, height, position);
 }
 
+Vehicle& Vehicle::operator=(const Vehicle& otherVehicle)
+{
+    vehicleModel = otherVehicle.vehicleModel;
+    startPosition = otherVehicle.startPosition;
+    Set(otherVehicle.width, otherVehicle.height, otherVehicle.position);
+    return *this;
+}
+
 void Vehicle::Set(const int width, const int height, const glm::vec3 & position)
 {
     this->isPerspective = true;
@@ -67,10 +75,10 @@ void Vehicle::ProcessKeyboard(VehicleMovementType direction, float deltaTime)
             position += right * velocity;
             break;
         case VehicleMovementType::V_ROTATE_RIGHT:
-            rotation += 0.05f * velocity;
+            rotation += 10.5f * velocity;
             break;
         case VehicleMovementType::V_ROTATE_LEFT:
-            rotation -= 0.05f * velocity;
+            rotation -= 10.5f * velocity;
             break;
     }
 }

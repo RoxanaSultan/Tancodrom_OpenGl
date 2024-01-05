@@ -34,6 +34,7 @@ const unsigned int SCR_HEIGHT = 900;
 
 
 Camera* pCamera = nullptr;
+bool isVehicleMoving = false;
 
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
@@ -131,6 +132,11 @@ std::vector<glm::vec3> tanksPositions =
 std::string objFilePath = "tank.obj";
 //objl::Loader loader;
 //std::cout << loader.LoadedMeshes[0].MeshName;
+
+
+Model tankModel;
+
+Vehicle tankVehicle;
 
 int main(int argc, char** argv)
 {
@@ -283,9 +289,9 @@ int main(int argc, char** argv)
         }
     }
 
-    Model tankModel(strExePath + '\\' + objFilePath);
+    tankModel = Model(strExePath + '\\' + objFilePath);
+    tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
-    Vehicle tankVehicle = Vehicle(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -348,7 +354,7 @@ int main(int argc, char** argv)
         glm::vec3 tankScale = glm::vec3(0.5f);
 
         renderTank(shadowMappingDepthShader, tankVehicle.getVehicleModel(), tankVehicle.GetPosition(), tankVehicle.getRotation(), tankScale);
-
+        isVehicleMoving = true;
         /*for (auto& tankPosition : tanksPositions)
         {
             renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
@@ -603,14 +609,36 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+   
+
+    //tank Movement
+    if(isVehicleMoving)
+    {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            tankVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            tankVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            tankVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            tankVehicle.ProcessKeyboard(V_ROTATE_LEFT, (float)deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            tankVehicle.ProcessKeyboard(V_ROTATE_RIGHT, (float)deltaTime);
+    }
+    else
+    {
+        if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
+    }
+
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
         pCamera->ProcessKeyboard(UP, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
