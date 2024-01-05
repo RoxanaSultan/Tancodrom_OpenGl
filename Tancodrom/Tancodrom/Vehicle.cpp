@@ -69,15 +69,9 @@ void Vehicle::ProcessKeyboard(VehicleMovementType direction, float deltaTime)
             position -= forward * velocity;
             break;
         case VehicleMovementType::V_LEFT:
-            position -= right * velocity;
-            break;
-        case VehicleMovementType::V_RIGHT:
-            position += right * velocity;
-            break;
-        case VehicleMovementType::V_ROTATE_RIGHT:
             rotation += 10.5f * velocity;
             break;
-        case VehicleMovementType::V_ROTATE_LEFT:
+        case VehicleMovementType::V_RIGHT:
             rotation -= 10.5f * velocity;
             break;
     }

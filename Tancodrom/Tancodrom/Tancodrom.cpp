@@ -609,7 +609,7 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-   
+
 
     //tank Movement
     if(isVehicleMoving)
@@ -622,18 +622,12 @@ void processInput(GLFWwindow* window)
             tankVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            tankVehicle.ProcessKeyboard(V_ROTATE_LEFT, (float)deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-            tankVehicle.ProcessKeyboard(V_ROTATE_RIGHT, (float)deltaTime);
     }
-    else
-    {
-        if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-            pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
-    }
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);

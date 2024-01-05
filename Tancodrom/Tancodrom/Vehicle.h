@@ -13,9 +13,7 @@ enum VehicleMovementType
     V_FORWARD,
     V_BACKWARD,
     V_LEFT,
-    V_RIGHT,
-    V_ROTATE_LEFT,
-    V_ROTATE_RIGHT
+    V_RIGHT
 };
 
 class Vehicle
