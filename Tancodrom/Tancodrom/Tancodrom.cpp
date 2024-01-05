@@ -127,14 +127,14 @@ double currentRotatePropeller = 0.0f;
 
 std::vector<glm::vec3> tanksPositions =
 {
-    glm::vec3(0.0f, -1.55f, 0.0f),
-    glm::vec3(5.0f, -1.55f, 1.0f),
-    glm::vec3(10.0f, -1.55f, 1.5f),
-    glm::vec3(-5.0f, -1.55f, 0.0f),
-    glm::vec3(-10.0f, -1.55f, 2.0f)
+    glm::vec3(5.0f, -1.55f, 10.0f),
+    glm::vec3(-5.0f, -1.55f, 10.5f),
+    glm::vec3(10.0f, -1.55f, 20.0f),
+    glm::vec3(-10.0f, -1.55f, 20.0f),
+    glm::vec3(0.0f, -1.55f, 20.0f)
 };
 
-std::string objFilePath = "tank.obj";
+std::string tankFilePath = "tank.obj";
 std::string mountainFilePath = "mountain.obj";
 std::string helicopterPath = "body.obj";
 std::string propellerPath = "propeller.obj";
@@ -148,7 +148,7 @@ MoveableObject tankVehicle, helicopterVehicle, propeller;
 
 std::vector<glm::vec3> mountainsPositions =
 {
-    glm::vec3(-10.5f, -1.55f, 10.0f),
+    glm::vec3(-20.5f, -1.55f, 10.0f),
     glm::vec3(50.0f, -1.55f, -25.0f),
     glm::vec3(20.0f, -1.55f, 20.0f),
     glm::vec3(-35.0f, -1.55f, -15.0f),
@@ -371,7 +371,7 @@ int main(int argc, char** argv)
             }
         }
 
-    tankModel = Model(strExePath + '\\' + objFilePath);
+    tankModel = Model(strExePath + '\\' + tankFilePath);
     tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
     helicopterModel = Model(strExePath + '\\' + helicopterPath);
@@ -382,6 +382,7 @@ int main(int argc, char** argv)
     propeller = MoveableObject(propellerModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 6.0f, 0.0f));
 
     Model mountainModel(strExePath + '\\' + mountainFilePath);
+    Model tankModel(strExePath + '\\' + tankFilePath);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -454,10 +455,10 @@ int main(int argc, char** argv)
         
         renderModel(shadowMappingDepthShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
 
-        /*for (auto& tankPosition : tanksPositions)
+        for (auto& tankPosition : tanksPositions)
         {
-            renderTank(shadowMappingDepthShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
-        }*/
+            renderModel(shadowMappingDepthShader, tankModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
+        }
 
         float mountainRotation = 0.0f;
         glm::vec3 mountainScale = glm::vec3(0.1f);
@@ -499,10 +500,10 @@ int main(int argc, char** argv)
         renderModel(ModelShader, helicopterVehicle.getVehicleModel(), helicopterVehicle.GetPosition(), helicopterVehicle.getRotation(), helicopterScale);
         renderModel(ModelShader, propeller.getVehicleModel(), propeller.GetPosition(), propeller.getRotation(), propellerScale);
 
-        /*for (auto& tankPosition : tanksPositions)
+        for (auto& tankPosition : tanksPositions)
         {
-            renderTank(TankModelShader, myModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
-        }*/
+            renderModel(ModelShader, tankModel, tankPosition - glm::vec3(0.0f, 0.0f, currentMoveTank), tankRotation, tankScale);
+        }
 
         for (int i = 0; i < mountainsPositions.size(); i++)
         {
