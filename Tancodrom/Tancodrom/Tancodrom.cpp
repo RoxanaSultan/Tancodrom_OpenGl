@@ -29,8 +29,8 @@
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "OpenGL32.lib")
 
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 900;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 bool isDayTime = false;
 
 
@@ -159,7 +159,15 @@ std::vector<glm::vec3> mountainsPositions =
     //far
     glm::vec3(-30.0f, -1.55f, -150.0f),
     glm::vec3(-15.0f, -1.55f, -145.0f),
-    glm::vec3(15.0f, -1.55f, -155.0f)
+    glm::vec3(15.0f, -1.55f, -155.0f),
+
+    //far far
+    glm::vec3(70.0f, -1.55f, 200.0f),
+    glm::vec3(-70.0f, -1.55f, 200.0f),
+    glm::vec3(90.0f, -1.55f, 160.0f),
+
+    glm::vec3(160.0f, -1.55f, 100.0f),
+    glm::vec3(-160.0f, -1.55f, 100.0f)
 };
 
 std::vector<glm::vec3> mountainsScales =
@@ -173,7 +181,14 @@ std::vector<glm::vec3> mountainsScales =
     //far
     glm::vec3(0.6f),
     glm::vec3(0.8f),
-    glm::vec3(0.7f)
+    glm::vec3(0.7f),
+    //far far
+    glm::vec3(0.6f),
+    glm::vec3(0.6f),
+    glm::vec3(0.8f),
+
+    glm::vec3(0.4f),
+    glm::vec3(0.4f)
 };
 
 
@@ -183,19 +198,19 @@ std::vector<std::string> facesDay
     "skybox_images\\skybox_left.jpg",
     "skybox_images\\skybox_top.jpg",
     "skybox_images\\skybox_bottom.jpg",
-    "skybox_images\\skybox_front.jpg",
-    "skybox_images\\skybox_back.jpg"
+    "skybox_images\\skybox_back.jpg",
+    "skybox_images\\skybox_front.jpg"
 };
 
 std::vector<std::string>facesNight
 {
 
-      "skybox_images_night\\skybox_night_right.jpg",
-      "skybox_images_night\\skybox_night_left.jpg",
-      "skybox_images_night\\skybox_night_top.jpg",
-      "skybox_images_night\\skybox_night_bottom.jpg",
       "skybox_images_night\\skybox_night_front.jpg",
-      "skybox_images_night\\skybox_night_back.jpg"
+      "skybox_images_night\\skybox_night_back.jpg",
+      "skybox_images_night\\skybox_night_left.jpg",
+      "skybox_images_night\\skybox_night_right.jpg",
+      "skybox_images_night\\skybox_night_top.jpg",
+      "skybox_images_night\\skybox_night_bottom.jpg"
 };
 
 //std::vector<std::string> faces = facesDay;
