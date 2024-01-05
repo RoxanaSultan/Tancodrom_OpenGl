@@ -601,12 +601,6 @@ void renderScene(const Shader& shader)
     model = glm::translate(model, glm::vec3(0.0f, deltaY, 0.0f));
     shader.SetMat4("model", model);
     renderFloor();
-
-    // cube
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(0.0f, 1.75f, 0.0));
-    model = glm::scale(model, glm::vec3(0.75f));
-    shader.SetMat4("model", model);
 }
 
 
