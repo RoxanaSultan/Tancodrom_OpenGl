@@ -28,7 +28,7 @@
 #pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "OpenGL32.lib")
 
-const unsigned int SCR_WIDTH = 1800;
+const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 bool isDayTime = false;
 
