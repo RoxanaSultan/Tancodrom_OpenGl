@@ -30,6 +30,7 @@
 
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 900;
+bool isDayTime = false;
 
 
 Camera* pCamera = nullptr;
@@ -239,46 +240,84 @@ int main(int argc, char** argv)
         "skybox_images\\skybox_back.jpg"
     };
 
+    std::vector<std::string>facesNight
+    {
+      "skybox_images_night\\skybox_night.jpg", 
+      "skybox_images_night\\skybox_night.jpg",
+       "skybox_images_night\\skybox_night.jpg",
+        "skybox_images_night\\skybox_night.jpg",
+         "skybox_images_night\\skybox_night.jpg",
+          "skybox_images_night\\skybox_night.jpg"
+    };
+
     //unsigned int cubemapTexture = loadCubemap(faces);
     unsigned int cubemapTexture;
+  
+    unsigned int cubemapTextureNight;
+
+    
+
 
     glGenTextures(1, &cubemapTexture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+    glGenTextures(1, &cubemapTextureNight);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
+     
     int width, height, nrChannels;
-    for (unsigned int i = 0; i < faces.size(); i++)
+    if (isDayTime)
     {
-        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-        if (data)
+        for (unsigned int i = 0; i < faces.size(); i++)
         {
-            stbi_set_flip_vertically_on_load(false);
-            glTexImage2D
-            (
-                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0,
-                GL_RGB,
-                width,
-                height,
-                0,
-                GL_RGB,
-                GL_UNSIGNED_BYTE,
-                data
-            );
-            //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGetError();
-            stbi_image_free(data);
+            unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+            if (data)
+            {
+                stbi_set_flip_vertically_on_load(false);
+                glTexImage2D
+                (
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                    0,
+                    GL_RGB,
+                    width,
+                    height,
+                    0,
+                    GL_RGB,
+                    GL_UNSIGNED_BYTE,
+                    data
+                );
+                //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                //    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                glGetError();
+                stbi_image_free(data);
+            }
+            else
+            {
+                std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+                stbi_image_free(data);
+            }
         }
-        else
-        {
-            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-            stbi_image_free(data);
+    }else
+    {
+        //Incarcare texturi skybox de noapte
+        for (unsigned int i = 0; i < facesNight.size(); i++) {
+            unsigned char* data = stbi_load(facesNight[i].c_str(), &width, &height, &nrChannels, 0);
+            if (data) {
+                stbi_set_flip_vertically_on_load(false);
+                glTexImage2D(
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+                );
+                stbi_image_free(data);
+            }
+            else {
+                std::cout << "Cubemap texture failed to load at path: " << facesNight[i] << std::endl;
+            }
         }
     }
 
@@ -403,7 +442,17 @@ int main(int argc, char** argv)
         skyboxShader.SetMat4("projection", projectionSB);
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        //Choose the texture day or night
+        if (isDayTime)
+        {
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+        }
+        else
+        {
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTextureNight);;
+        }
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         //glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
@@ -593,6 +642,10 @@ void renderCube()
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
 {
+    
+    
+    if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+        isDayTime = !isDayTime;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
