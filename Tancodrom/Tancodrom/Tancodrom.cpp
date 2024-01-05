@@ -40,6 +40,8 @@ bool isHelicopterMoving = false;
 bool thirdPersonView = true;
 bool freeCameraView = true;
 
+MoveableObject* currentObject;
+
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
     unsigned int textureId = -1;
@@ -374,6 +376,8 @@ int main(int argc, char** argv)
     tankModel = Model(strExePath + '\\' + tankFilePath);
     tankVehicle = MoveableObject(tankModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, -1.55f, 0.0f));
 
+    currentObject = &tankVehicle;
+
     helicopterModel = Model(strExePath + '\\' + helicopterPath);
     helicopterVehicle = MoveableObject(helicopterModel, SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 5.0f, 0.0f));
     helicopterVehicle.setRotation(90.0f);
@@ -481,7 +485,7 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shadowMappingShader.Use();
         glm::mat4 projection = pCamera->GetProjectionMatrix();
-        glm::mat4 view = pCamera->GetViewMatrix();
+        glm::mat4 view = pCamera->GetViewMatrix(currentObject);
         shadowMappingShader.SetMat4("projection", projection);
         shadowMappingShader.SetMat4("view", view);
         // set light uniforms
@@ -527,7 +531,7 @@ int main(int argc, char** argv)
         skyboxShader.SetInt("skybox2", 1); // Texture unit 1
         skyboxShader.SetFloat("blendFactor", blendFactor); // Set your blend factor here
 
-        glm::mat4 viewSB = glm::mat4(glm::mat3(pCamera->GetViewMatrix())); // Remove translation component
+        glm::mat4 viewSB = glm::mat4(glm::mat3(pCamera->GetViewMatrix(currentObject))); // Remove translation component
         //glm::mat4 projectionSB = glm::perspective(glm::radians(pCamera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
         glm::mat4 projectionSB = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -639,7 +643,7 @@ void renderModel(Shader& ourShader, Model& ourModel, const glm::vec3& position, 
     model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the model
     model = glm::scale(model, scale); // Scale the tank
 
-    glm::mat4 viewMatrix = pCamera->GetViewMatrix();
+    glm::mat4 viewMatrix = pCamera->GetViewMatrix(currentObject);
     glm::mat4 projectionMatrix = pCamera->GetProjectionMatrix();
 
 
@@ -728,8 +732,6 @@ void renderCube()
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
 {
-    
-    
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
         if(blendFactor < 1)
             blendFactor += 0.001;
@@ -740,25 +742,30 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
     {
-        pCamera->Set(SCR_WIDTH, SCR_HEIGHT, tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 5.5f));
+        //pCamera->Set(SCR_WIDTH, SCR_HEIGHT, );
+        pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         freeCameraView = false;
         isHelicopterMoving = false;
         isTankMoving = true;
+        pCamera->freeCamera = false;
+        currentObject = &tankVehicle;
     }
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
     {
-        pCamera->Set(SCR_WIDTH, SCR_HEIGHT, helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
+        pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
         freeCameraView = false;
         isTankMoving = false;
         isHelicopterMoving = true;
+        pCamera->freeCamera = false;
+        currentObject = &helicopterVehicle;
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
         if (isTankMoving)
-            pCamera->Set(SCR_WIDTH, SCR_HEIGHT, tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 5.5f));
+            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
 
         if (isHelicopterMoving)
-            pCamera->Set(SCR_WIDTH, SCR_HEIGHT, helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
+            pCamera->SetPosition(helicopterVehicle.GetPosition() + glm::vec3(0.0f, 2.0f, 8.5f));
         thirdPersonView = true;
     }
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -776,6 +783,7 @@ void processInput(GLFWwindow* window)
         pCamera->Reset(SCR_WIDTH, SCR_HEIGHT);
         isTankMoving = false;
         isHelicopterMoving = false;
+        pCamera->freeCamera = true;
     }
 
     //tank Movement
@@ -785,22 +793,25 @@ void processInput(GLFWwindow* window)
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_FORWARD, (float)deltaTime);
-            pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
+            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_BACKWARD, (float)deltaTime);
-            pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
+            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
+            //pCamera->SetForwardVector(tankVehicle.GetForward());
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
-            pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
+            //pCamera->SetForwardVector(tankVehicle.GetForward());
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
             tankVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
-            pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
+            pCamera->SetPosition(tankVehicle.GetPosition() + glm::vec3(0.0f, 3.0f, 8.5f));
+            //pCamera->SetForwardVector(tankVehicle.GetForward());
         }
     }
 
@@ -822,13 +833,13 @@ void processInput(GLFWwindow* window)
         {
             helicopterVehicle.ProcessKeyboard(V_LEFT, (float)deltaTime);
             propeller.ProcessKeyboard(V_LEFT, (float)deltaTime);
-            pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+            pCamera->ProcessKeyboard(ROTATE_LEFT, (float)deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
             helicopterVehicle.ProcessKeyboard(V_RIGHT, (float)deltaTime);
             propeller.ProcessKeyboard(V_RIGHT, (float)deltaTime);
-            pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
+            pCamera->ProcessKeyboard(ROTATE_RIGHT, (float)deltaTime);
         }
     }
 

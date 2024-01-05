@@ -3,6 +3,7 @@
 Camera::Camera(const int width, const int height, const glm::vec3& position)
 {
     startPosition = position;
+    freeCamera = true;
     Set(width, height, position);
 }
 
@@ -47,10 +48,19 @@ const glm::vec3 Camera::GetPosition() const
     return position;
 }
 
-const glm::mat4 Camera::GetViewMatrix() const
+void Camera::SetPosition(glm::vec3 position)
 {
-    // Returns the View Matrix
-    return glm::lookAt(position, position + forward, up);
+    this->position = position;
+}
+
+glm::mat4 Camera::GetViewMatrix(MoveableObject* model)
+{
+    if (freeCamera)
+        return glm::lookAt(position, position + forward, up);
+    float distance = 10.0f;
+    this->forward.x = cos(glm::radians(model->GetYaw())) * distance;
+    this->forward.z = sin(glm::radians(model->GetYaw())) * distance;
+    return glm::lookAt(model->GetPosition() + glm::vec3(-forward.x, forward.y, -forward.z) + glm::vec3(0.f, 5.0f, 0.f), model->GetPosition() + glm::vec3(0.f, 3.0f, 0.f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 const glm::mat4 Camera::GetProjectionMatrix() const
@@ -93,6 +103,16 @@ void Camera::ProcessKeyboard(ECameraMovementType direction, float deltaTime)
         case ECameraMovementType::DOWN:
             position -= up * velocity;
             break;
+        case ECameraMovementType::ROTATE_LEFT:
+            yaw -= 12.5f * velocity;
+            position += right * velocity;
+            UpdateCameraVectors();
+            break;
+        case ECameraMovementType::ROTATE_RIGHT:
+            yaw += 12.5f * velocity;
+            position -= right * velocity;
+            UpdateCameraVectors();
+            break;
     }
 }
 
@@ -130,6 +150,11 @@ void Camera::ProcessMouseScroll(float yOffset)
         FoVy = 1.0f;
     if (FoVy >= 90.0f)
         FoVy = 90.0f;
+}
+
+void Camera::SetForwardVector(glm::vec3 forward)
+{
+    this->forward = forward;
 }
 
 void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)

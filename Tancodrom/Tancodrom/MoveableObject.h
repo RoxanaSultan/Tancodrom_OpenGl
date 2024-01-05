@@ -47,6 +47,10 @@ public:
     float getRotation();
     void setRotation(float newRotation);
 
+    glm::vec3 GetForward();
+
+    float GetYaw();
+
 private:
     void UpdateObjectVectors();
 

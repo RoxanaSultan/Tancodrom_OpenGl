@@ -96,6 +96,16 @@ void MoveableObject::setRotation(float newRotation)
     rotation = newRotation;
 }
 
+glm::vec3 MoveableObject::GetForward()
+{
+    return forward;
+}
+
+float MoveableObject::GetYaw()
+{
+    return yaw;
+}
+
 void MoveableObject::UpdateObjectVectors()
 {
     // Calculate the new forward vector

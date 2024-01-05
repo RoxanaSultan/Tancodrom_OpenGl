@@ -6,6 +6,8 @@
 #include <gtc/matrix_transform.hpp>
 #include <glfw3.h>
 
+#include "MoveableObject.h"
+
 enum ECameraMovementType
 {
     UNKNOWN,
@@ -14,7 +16,9 @@ enum ECameraMovementType
     LEFT,
     RIGHT,
     UP,
-    DOWN
+    DOWN,
+    ROTATE_LEFT,
+    ROTATE_RIGHT
 };
 
 class Camera
@@ -29,6 +33,8 @@ private:
     glm::vec3 startPosition;
 
 public:
+    bool freeCamera;
+
     Camera(const int width, const int height, const glm::vec3& position);
 
     void Set(const int width, const int height, const glm::vec3& position);
@@ -39,7 +45,9 @@ public:
 
     const glm::vec3 GetPosition() const;
 
-    const glm::mat4 GetViewMatrix() const;
+    void SetPosition(glm::vec3 position);
+
+    glm::mat4 GetViewMatrix(MoveableObject* model);
 
     const glm::mat4 GetProjectionMatrix() const;
    
@@ -48,6 +56,8 @@ public:
     void MouseControl(float xPos, float yPos);
 
     void ProcessMouseScroll(float yOffset);
+
+    void SetForwardVector(glm::vec3 forward);
 
 private:
     void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
