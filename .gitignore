@@ -397,4 +397,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-!Tancodrom/Assets/*.obj
+!Tancodrom/Assets/**/*.obj
